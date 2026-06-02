@@ -1,3 +1,22 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.google-g {
+    font-family: 'Product Sans', Arial, Helvetica, sans-serif;
+    font-weight: bold;
+    font-size: 100px;
+
+    background: linear-gradient(
+        135deg,
+        #4285F4 0% 45%,    /* blue */
+        #EA4335 45% 55%,   /* red */
+        #FBBC05 55% 75%,   /* yellow */
+        #34A853 75% 100%   /* green */
+    );
+
+    /* Clip the background the text shape */
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    display: inline-block;
+}

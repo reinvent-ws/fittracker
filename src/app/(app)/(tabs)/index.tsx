@@ -1,6 +1,7 @@
 import { Link } from "expo-router";
 import React from "react";
-import { SafeAreaView, Text, View } from "react-native";
+import { Text, View } from "react-native";
+import {SafeAreaView} from 'react-native-safe-area-context'
 
 export default function Page() {
   return (
@@ -19,7 +20,7 @@ function Content() {
           <View className="flex flex-col items-center gap-4 text-center">
             <Text
               role="heading"
-              className="text-3xl text-center native:text-5xl font-bold tracking-tighter sm:text-4xl md:text-5xl lg:text-6xl"
+              className="text-lg text-center native:text-5xl font-bold tracking-tighter sm:text-4xl md:text-5xl lg:text-6xl"
             >
               Expo + Tailwind (NativeWind) Template
             </Text>
@@ -72,8 +73,9 @@ function Content() {
 
 function Header() {
   return (
+    <SafeAreaView className="w-fit h-fit">
     <View>
-      <View className="px-4 lg:px-6 h-14 flex items-center flex-row justify-between ">
+      <View className="px-4 lg:px-6 h-14 flex items-center flex-row justify-between">
         <Link className="font-bold flex-1 items-center justify-center" href="/">
           PAPAFAM
         </Link>
@@ -87,5 +89,6 @@ function Header() {
         </View>
       </View>
     </View>
+    </SafeAreaView>
   );
 }

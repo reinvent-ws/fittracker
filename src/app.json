@@ -1,0 +1,9 @@
+{
+    "expo": {
+        "plugins": [
+            "expo-secure-store",
+            "@clerk/expo",
+            "@react-native-google-signin/google-signin"
+        ]
+    }
+}
