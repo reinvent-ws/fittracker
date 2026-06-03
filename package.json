@@ -11,8 +11,7 @@
     "deploy": "npx expo export -p web && npx eas-cli@latest deploy"
   },
   "dependencies": {
-    "@clerk/clerk-expo": "^2.19.31",
-    "@clerk/expo": "^3.3.0",
+    "@clerk/clerk-expo": "2.19.38",
     "@expo/vector-icons": "^15.0.3",
     "@react-native-google-signin/google-signin": "^16.1.2",
     "@react-native-masked-view/masked-view": "0.3.2",

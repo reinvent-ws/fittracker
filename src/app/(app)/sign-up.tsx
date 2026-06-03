@@ -7,10 +7,10 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { useSignUp } from "@clerk/clerk-expo";
 import { Link, useRouter } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
+import { useSignUp } from "@clerk/clerk-expo";
 
 // Handle submission of sign-up form
 export default function SignUpScreen() {
@@ -91,17 +91,24 @@ export default function SignUpScreen() {
           {/* Main */}
           <View className="flex-1 justify-center">
             {/* Logo/Branding */}
-            <View className="items-center mb-8">
-              View className="w-20 h-20 bg-gradient-to-br Ifrom-blue-600
-              to-purple-600 rounded-2xl items-center justify-center mb-4
-              shadow-lg"
-              <Ionicons name="fitness" size={40} color="white" />
+            <View className="flex-row items-center justify-center mb-8">
+              <View
+                className="w-20 h-20 bg-gradient-to-br from-blue-600
+              to-purple-600 rounded-2xl items-center justify-center mb-4"
+              >
+                <Ionicons
+                  name="fitness"
+                  size={40}
+                  color="white"
+                  style={{ filter: "drop-shadow(0 0 10px rgba(0, 0, 0, 0.5))" }}
+                />
+              </View>
+              <Text className="w-fit text-3xl font-bold text-gray-900 mb-2">
+                Join FitTracker
+              </Text>
             </View>
-            <Text className="text-3xl font-bold text-gray-900 mb-2">
-              Join FitTracker
-            </Text>
             <Text className="text-lgtext-gray-600 text-center">
-              Start your fitness journey{"\n"} and achieve your goals
+              Start your fitness journey{"\n"}and achieve your goals
             </Text>
           </View>
         </View>
