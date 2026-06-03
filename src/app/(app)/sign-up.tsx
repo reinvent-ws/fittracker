@@ -18,8 +18,10 @@ export default function SignUpScreen() {
   const router = useRouter();
   const [emailAddress, setEmailAddress] = React.useState("");
   const [password, setPassword] = React.useState("");
-  const [pendingVerification, setPendingVerification] = React.useState(false);
+  const [pendingVerification, setPendingVerification] =
+    React.useState<boolean>(false);
   const [code, setCode] = React.useState("");
+  const [isLoading, setIsLoading] = React.useState<boolean>(false);
 
   // Handle submission of sign-up form
   const onSignUpPress = async () => {
@@ -82,16 +84,16 @@ export default function SignUpScreen() {
   }
 
   return (
-    <SafeAreaView className="flex-1 px-4">
+    <SafeAreaView className="flex-1 px-6">
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         className="flex-1"
       >
-        <View className="flex-1 px-6">
+        <View className="flex-1">
           {/* Main */}
           <View className="flex-1 justify-center">
             {/* Logo/Branding */}
-            <View className="flex-row items-center justify-center mb-8">
+            <View className="items-center justify-center mb-4">
               <View
                 className="w-20 h-20 bg-gradient-to-br from-blue-600
               to-purple-600 rounded-2xl items-center justify-center mb-4"
@@ -110,6 +112,63 @@ export default function SignUpScreen() {
             <Text className="text-lgtext-gray-600 text-center">
               Start your fitness journey{"\n"}and achieve your goals
             </Text>
+          </View>
+
+          <View className="flex-1">
+            <View className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100 mb-6">
+              <Text className="text-2xl font-bold text-gray-900 mb-6 text-center">
+                Create Your Account
+              </Text>
+
+              {/* Email Input */}
+              <View>
+                <Text className="text-sm font-medium text-gray-700 mb-2">
+                  Email
+                </Text>
+                <View className="flex-row items-center bg-gray-50 rounded-xl px-4 py-0 border border-gray-200">
+                  <Ionicons name="mail-outline" size={20} color="#6B7280" />
+                  <TextInput
+                    autoCapitalize="none"
+                    value={emailAddress}
+                    placeholder="Enter your email"
+                    placeholderTextColor="#9CA3AF"
+                    secureTextEntry={true}
+                    onChangeText={setEmailAddress}
+                    className="flex-1 ml-3 text-gray-900"
+                    editable={!isLoading}
+                  />
+                </View>
+              </View>
+
+              {/* Password Input */}
+              <View className="mb-6">
+                <Text className="text-sm font-medium text-gray-700 mb-2">
+                  Password
+                </Text>
+                <View
+                  className="flex-row items-center Ibg-gray-50 гounded-xl
+                px-4 py-4 border border-gray-200"
+                >
+                  <Ionicons
+                    name="lock-closed-outline"
+                    size={20}
+                    color="#687280"
+                  />
+                  <TextInput
+                    value={password}
+                    placeholder="Create a password"
+                    placeholderTextColor="#9CA3AF"
+                    secureTextEntry={true}
+                    onChangeText={setPassword}
+                    className="flex-1 ml-3 text-gray-900"
+                    editable={!isLoading}
+                  />
+                </View>
+                <Text className="text-xs text-gray-500 mt-1">
+                  Must be at least 8 characters
+                </Text>
+              </View>
+            </View>
           </View>
         </View>
         {/* Footer */}

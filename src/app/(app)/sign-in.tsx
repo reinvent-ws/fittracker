@@ -75,7 +75,7 @@ export default function SignInScreen() {
 
           {/* Sign in section */}
           <View className="flex-1 justify-center">
-            <View className="bg-white rounded-2xl p-6 drop-shadow-2xl border border-gray-100 mb-6">
+            <View className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 mb-6">
               <Text className="text-2xl font-bold text-gray-900 mb-6 text-center">
                 Welcome Back
               </Text>

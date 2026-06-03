@@ -54,7 +54,7 @@ export default function GoogleSignIn() {
     <TouchableOpacity
       onPress={onPress}
       disabled={isLoading}
-      className={`rounded-xl py-4 shadow-xs my-2 ${
+      className={`rounded-xl py-4 shadow-sm my-2 ${
         isLoading ? "bg-gray-400" : "bg-white border border-gray-200 shadow-sm"
       }`}
       activeOpacity={0.8}
