@@ -33,7 +33,8 @@ export default function SignUpScreen() {
     try {
       await signUp.create({ emailAddress, password });
 
-      // Send user an email with verification code await signup.prepareEmailAddressVerification({ strategy: "email_code" });
+      // Send user an email with verification code
+      await signUp.prepareEmailAddressVerification({ strategy: "email_code" });
 
       // Set 'pendingVerification' to true to display second form and capture OTP code
       setPendingVerification(true);
@@ -69,17 +70,22 @@ export default function SignUpScreen() {
 
   if (pendingVerification) {
     return (
-      <>
-        <Text>Verify your email</Text>
-        <TextInput
-          value={code}
-          placeholder="Enter your verification code"
-          onChangeText={(code) => setCode(code)}
-        />
-        <TouchableOpacity onPress={onVerifyPress}>
-          <Text>Verify</Text>
-        </TouchableOpacity>
-      </>
+      <SafeAreaView className="flex-1 justify-center items-center bg-gray-50">
+        <KeyboardAvoidingView
+          behavior={Platform.OS === "ios" ? "padding" : "height"}
+          className="flex-1"
+        >
+          <Text>Verify your email</Text>
+          <TextInput
+            value={code}
+            placeholder="Enter your verification code"
+            onChangeText={(code) => setCode(code)}
+          />
+          <TouchableOpacity onPress={onVerifyPress}>
+            <Text>Verify</Text>
+          </TouchableOpacity>
+        </KeyboardAvoidingView>
+      </SafeAreaView>
     );
   }
 
@@ -91,7 +97,7 @@ export default function SignUpScreen() {
       >
         <View className="flex-1">
           {/* Main */}
-          <View className="flex-1 justify-center">
+          <View className="justify-center">
             {/* Logo/Branding */}
             <View className="items-center justify-center mb-4">
               <View
@@ -114,8 +120,8 @@ export default function SignUpScreen() {
             </Text>
           </View>
 
-          <View className="flex-1">
-            <View className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100 mb-6">
+          <View className="mt-6">
+            <View className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
               <Text className="text-2xl font-bold text-gray-900 mb-6 text-center">
                 Create Your Account
               </Text>
@@ -132,7 +138,6 @@ export default function SignUpScreen() {
                     value={emailAddress}
                     placeholder="Enter your email"
                     placeholderTextColor="#9CA3AF"
-                    secureTextEntry={true}
                     onChangeText={setEmailAddress}
                     className="flex-1 ml-3 text-gray-900"
                     editable={!isLoading}
@@ -168,7 +173,55 @@ export default function SignUpScreen() {
                   Must be at least 8 characters
                 </Text>
               </View>
+
+              {/* Sign Up Button */}
+              <TouchableOpacity
+                onPress={onSignUpPress}
+                disabled={isLoading}
+                className={`rounded-xl py-4 shadow-sm mb-4 ${
+                  isLoading ? "bg-gray-400" : "bg-blue-600"
+                }`}
+                activeOpacity={0.8}
+              >
+                <View className="flex-row items-center justify-center">
+                  {isLoading ? (
+                    <Ionicons name="refresh" size={20} color="white" />
+                  ) : (
+                    <Ionicons
+                      name="person-add-outline"
+                      size={20}
+                      color="white"
+                    />
+                  )}
+                  <Text className="text-white font-semibold text-lg ml-2">
+                    {isLoading ? "Creating Account..." : "Create Account"}
+                  </Text>
+                </View>
+              </TouchableOpacity>
+
+              {/* Terms */}
+              <Text className="text-xs text-gray-500 text-center mb-4">
+                By signing up, you agree to our Terms of Serice and Privacy
+                Policy
+              </Text>
             </View>
+          </View>
+
+          {/* Sign In Link */}
+          <View className="flex-row justify-center mt-4">
+            <Text className="text-gray-600">Already have an account? </Text>
+            <Link href="/sign-in" asChild>
+              <TouchableOpacity>
+                <Text className="text-blue-600 font-semibold">Sign In</Text>
+              </TouchableOpacity>
+            </Link>
+          </View>
+
+          {/* Footer */}
+          <View className="flex-1 justify-end pb-6">
+            <Text className="text-center text-gray-500 text-sm">
+              Ready to transform your fitness?
+            </Text>
           </View>
         </View>
         {/* Footer */}
