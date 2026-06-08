@@ -70,20 +70,56 @@ export default function SignUpScreen() {
 
   if (pendingVerification) {
     return (
-      <SafeAreaView className="flex-1 justify-center items-center bg-gray-50">
+      <SafeAreaView className="flex-1 bg-gray-50">
         <KeyboardAvoidingView
           behavior={Platform.OS === "ios" ? "padding" : "height"}
-          className="flex-1"
+          className="lex-1 flex justify-center items-center px-6"
         >
-          <Text>Verify your email</Text>
-          <TextInput
-            value={code}
-            placeholder="Enter your verification code"
-            onChangeText={(code) => setCode(code)}
-          />
-          <TouchableOpacity onPress={onVerifyPress}>
-            <Text>Verify</Text>
-          </TouchableOpacity>
+          {/* Logo/Branding */}
+          <View className="items-center mb-8">
+            <View className="w-20 h-20 bg-gradient-to-br from-blue-600 to-purple-600 rounded-2xl items-center justify-center mb-4">
+              <Ionicons
+                name="mail"
+                size={40}
+                color="white"
+                style={{ filter: "drop-shadow(0 0 10px rgba(0, 0, 0, 0.5))" }}
+              />
+            </View>
+            <Text className="text-3xl font-bold text-gray-900 mb-5">
+              Check Your Email
+            </Text>
+            <Text className="text-lg text-gray-600 text-center">
+              We've sent a verification code to{"\n"}
+              <Text className="font-black">{emailAddress}</Text>
+            </Text>
+          </View>
+
+          {/* Verification Form */}
+          {/* <View className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 mb-6">
+            <Text className="text-2xl font-bold text-gray-900 mb-6 text-center">
+              Enter Verification Code
+            </Text>
+          </View> */}
+
+          {/* Code Input */}
+          <View className="mb-6">
+            <Text className="text-sm font-medium text-gray-700 mb-2">
+              Verification Code
+            </Text>
+            <View className="flex-row w-full h-fit items-center px-4 border border-gray-200 bg-white">
+              <Ionicons name="key-outline" size={20} color="#687280" />
+              <TextInput
+                value={code}
+                placeholder="Enter 6-digit code"
+                placeholderTextColor="#9CA3AF"
+                onChangeText={setCode}
+                className="flex-1 h-auto ml-3 text-gray-900 text-center text-lg tracking-widest"
+                keyboardType="number-pad"
+                maxLength={6}
+                editable={!isLoading}
+              />
+            </View>
+          </View>
         </KeyboardAvoidingView>
       </SafeAreaView>
     );
@@ -131,7 +167,7 @@ export default function SignUpScreen() {
                 <Text className="text-sm font-medium text-gray-700 mb-2">
                   Email
                 </Text>
-                <View className="flex-row items-center bg-gray-50 rounded-xl px-4 py-0 border border-gray-200">
+                <View className="flex-row items-center bg-gray-50 rounded-xl px-4 border border-gray-200">
                   <Ionicons name="mail-outline" size={20} color="#6B7280" />
                   <TextInput
                     autoCapitalize="none"
@@ -150,10 +186,7 @@ export default function SignUpScreen() {
                 <Text className="text-sm font-medium text-gray-700 mb-2">
                   Password
                 </Text>
-                <View
-                  className="flex-row items-center Ibg-gray-50 гounded-xl
-                px-4 py-4 border border-gray-200"
-                >
+                <View className="flex-row items-center bg-gray-50 гounded-xl px-4 border border-gray-200">
                   <Ionicons
                     name="lock-closed-outline"
                     size={20}
