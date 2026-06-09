@@ -5,6 +5,7 @@ import {
   TouchableOpacity,
   KeyboardAvoidingView,
   Platform,
+  Alert,
 } from "react-native";
 import React, { useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -23,6 +24,8 @@ export default function SignInScreen() {
   // Handle the submission of the sign-in form
   const onSignInPress = async () => {
     if (!isLoaded) return;
+    Alert.alert("Erro", "Please fill in all fields");
+    return;
     // Start the sign-in process using the email and password provided
     try {
       const signInAttempt = await signIn.create({
