@@ -24,8 +24,14 @@ export default function SignInScreen() {
   // Handle the submission of the sign-in form
   const onSignInPress = async () => {
     if (!isLoaded) return;
-    Alert.alert("Erro", "Please fill in all fields");
-    return;
+
+    if (!emailAddress || !password) {
+      Alert.alert("Erro", "Please fill in all fields");
+      return;
+    }
+
+    setIsLoading(true);
+
     // Start the sign-in process using the email and password provided
     try {
       const signInAttempt = await signIn.create({
@@ -44,6 +50,8 @@ export default function SignInScreen() {
       }
     } catch (err) {
       console.log(JSON.stringify(err, null, 2));
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -94,7 +102,6 @@ export default function SignInScreen() {
                     value={emailAddress}
                     placeholder="Enter your email"
                     placeholderTextColor="#9CA3AF"
-                    secureTextEntry={true}
                     onChangeText={setEmailAddress}
                     className="flex-1 ml-3 text-gray-900"
                     editable={!isLoading}
@@ -115,7 +122,7 @@ export default function SignInScreen() {
                   />
                   <TextInput
                     autoCapitalize="none"
-                    value={emailAddress}
+                    value={password}
                     placeholder="Enter your password"
                     placeholderTextColor="#9CA3AF"
                     secureTextEntry={true}

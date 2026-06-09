@@ -1,5 +1,6 @@
 import * as React from "react";
 import {
+  Alert,
   KeyboardAvoidingView,
   Platform,
   Text,
@@ -27,7 +28,12 @@ export default function SignUpScreen() {
   const onSignUpPress = async () => {
     if (!isLoaded) return;
 
-    console.log(emailAddress, password);
+    if (!emailAddress || !password) {
+      Alert.alert("Erro", "Please fill in all fields");
+      return;
+    }
+
+    setIsLoading(true);
 
     // Start sign-up process using email and password provided
     try {
@@ -41,6 +47,8 @@ export default function SignUpScreen() {
     } catch (err) {
       // See https://clerk.com/docs/custom-flows/error-handling for more info on error handling
       console.error(JSON.stringify(err, null, 2));
+    } finally {
+      setIsLoading(false);
     }
   };
 
