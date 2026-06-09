@@ -125,12 +125,30 @@ export default function SignUpScreen() {
               onPress={onVerifyPress}
               disabled={isLoading}
               className={`rounded-xl py-4 shadow-sm ${
-                isLoading ? "bg-gray-400" : "bg-blue-600"
+                isLoading ? "bg-gray-400" : "bg-green-600"
               }`}
               activeOpacity={0.8}
             >
-              <Text className="text-white font-semibold text-lg text-center">
-                {isLoading ? "Verifying..." : "Verify Code"}
+              <View className="flex-row justify-center items-center gap-2">
+                {isLoading ? (
+                  <Ionicons name="refresh" size={20} color="white" />
+                ) : (
+                  <Ionicons
+                    name="checkmark-circle-outline"
+                    size={20}
+                    color="white"
+                  />
+                )}
+                <Text className="text-white font-semibold text-lg text-center">
+                  {isLoading ? "Verifying..." : "Verify Email"}
+                </Text>
+              </View>
+            </TouchableOpacity>
+
+            {/* Resend Code */}
+            <TouchableOpacity className="py-2">
+              <Text className="text-blue-600 font-medium text-center">
+                Didn't receive the code? Resend
               </Text>
             </TouchableOpacity>
           </View>
