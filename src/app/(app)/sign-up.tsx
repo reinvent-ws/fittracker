@@ -73,11 +73,11 @@ export default function SignUpScreen() {
       <SafeAreaView className="flex-1 bg-gray-50">
         <KeyboardAvoidingView
           behavior={Platform.OS === "ios" ? "padding" : "height"}
-          className="lex-1 flex justify-center items-center px-6"
+          className="flex-1 px-6 justify-center"
         >
           {/* Logo/Branding */}
           <View className="items-center mb-8">
-            <View className="w-20 h-20 bg-gradient-to-br from-blue-600 to-purple-600 rounded-2xl items-center justify-center mb-4">
+            <View className="w-20 h-20 rounded-2xl items-center justify-center mb-4">
               <Ionicons
                 name="mail"
                 size={40}
@@ -85,7 +85,7 @@ export default function SignUpScreen() {
                 style={{ filter: "drop-shadow(0 0 10px rgba(0, 0, 0, 0.5))" }}
               />
             </View>
-            <Text className="text-3xl font-bold text-gray-900 mb-5">
+            <Text className="text-3xl font-bold text-gray-900 mb-2 text-center">
               Check Your Email
             </Text>
             <Text className="text-lg text-gray-600 text-center">
@@ -94,31 +94,45 @@ export default function SignUpScreen() {
             </Text>
           </View>
 
-          {/* Verification Form */}
-          {/* <View className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 mb-6">
-            <Text className="text-2xl font-bold text-gray-900 mb-6 text-center">
+          {/* Card do Formulário de Verificação */}
+          <View className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 w-full">
+            <Text className="text-xl font-bold text-gray-900 mb-4 text-center">
               Enter Verification Code
             </Text>
-          </View> */}
 
-          {/* Code Input */}
-          <View className="mb-6">
-            <Text className="text-sm font-medium text-gray-700 mb-2">
-              Verification Code
-            </Text>
-            <View className="flex-row w-full h-fit items-center px-4 border border-gray-200 bg-white">
-              <Ionicons name="key-outline" size={20} color="#687280" />
-              <TextInput
-                value={code}
-                placeholder="Enter 6-digit code"
-                placeholderTextColor="#9CA3AF"
-                onChangeText={setCode}
-                className="flex-1 h-auto ml-3 text-gray-900 text-center text-lg tracking-widest"
-                keyboardType="number-pad"
-                maxLength={6}
-                editable={!isLoading}
-              />
+            {/* Code Input */}
+            <View className="mb-6">
+              <Text className="text-sm font-medium text-gray-700 mb-2">
+                Verification Code
+              </Text>
+              <View className="flex-row w-full h-14 items-center px-4 border border-gray-200 rounded-xl bg-gray-50">
+                <Ionicons name="key-outline" size={20} color="#6B7280" />
+                <TextInput
+                  value={code}
+                  placeholder="Enter 6-digit code"
+                  placeholderTextColor="#9CA3AF"
+                  onChangeText={setCode}
+                  className="flex-1 h-full ml-3 text-gray-900 text-lg font-semibold"
+                  keyboardType="number-pad"
+                  maxLength={6}
+                  editable={!isLoading}
+                />
+              </View>
             </View>
+
+            {/* Botão de Confirmar Código */}
+            <TouchableOpacity
+              onPress={onVerifyPress}
+              disabled={isLoading}
+              className={`rounded-xl py-4 shadow-sm ${
+                isLoading ? "bg-gray-400" : "bg-blue-600"
+              }`}
+              activeOpacity={0.8}
+            >
+              <Text className="text-white font-semibold text-lg text-center">
+                {isLoading ? "Verifying..." : "Verify Code"}
+              </Text>
+            </TouchableOpacity>
           </View>
         </KeyboardAvoidingView>
       </SafeAreaView>
@@ -151,7 +165,7 @@ export default function SignUpScreen() {
                 Join FitTracker
               </Text>
             </View>
-            <Text className="text-lgtext-gray-600 text-center">
+            <Text className="text-lg text-gray-600 text-center">
               Start your fitness journey{"\n"}and achieve your goals
             </Text>
           </View>
@@ -186,7 +200,7 @@ export default function SignUpScreen() {
                 <Text className="text-sm font-medium text-gray-700 mb-2">
                   Password
                 </Text>
-                <View className="flex-row items-center bg-gray-50 гounded-xl px-4 border border-gray-200">
+                <View className="flex-row items-center bg-gray-50 rounded-xl px-4 border border-gray-200">
                   <Ionicons
                     name="lock-closed-outline"
                     size={20}
