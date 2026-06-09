@@ -152,6 +152,13 @@ export default function SignUpScreen() {
               </Text>
             </TouchableOpacity>
           </View>
+
+          {/* Footer */}
+          <View className="absolute bottom-4 left-[55%] -translate-x-[50%] text-gray-500 text-sm">
+            <Text className="text-center">
+              Almost there! Just one more step
+            </Text>
+          </View>
         </KeyboardAvoidingView>
       </SafeAreaView>
     );
