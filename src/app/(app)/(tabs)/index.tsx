@@ -1,13 +1,38 @@
 import { Link } from "expo-router";
 import React from "react";
 import { Text, View } from "react-native";
-import {SafeAreaView} from 'react-native-safe-area-context'
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function Page() {
   return (
     <SafeAreaView className="flex flex-1">
       <Header />
       <Content />
+    </SafeAreaView>
+  );
+}
+
+function Header() {
+  return (
+    <SafeAreaView className="w-fit h-fit">
+      <View>
+        <View className="px-4 lg:px-6 h-14 flex items-center flex-row justify-between">
+          <Link
+            className="font-bold flex-1 items-center justify-center"
+            href="/"
+          >
+            PAPAFAM
+          </Link>
+          <View className="">
+            <Link
+              className="text-md font-medium hover:underline web:underline-offset-4"
+              href="https://www.papareact.com/course"
+            >
+              Join My Course ❤️
+            </Link>
+          </View>
+        </View>
+      </View>
     </SafeAreaView>
   );
 }
@@ -68,27 +93,5 @@ function Content() {
         </View>
       </View>
     </View>
-  );
-}
-
-function Header() {
-  return (
-    <SafeAreaView className="w-fit h-fit">
-    <View>
-      <View className="px-4 lg:px-6 h-14 flex items-center flex-row justify-between">
-        <Link className="font-bold flex-1 items-center justify-center" href="/">
-          PAPAFAM
-        </Link>
-        <View className="">
-          <Link
-            className="text-md font-medium hover:underline web:underline-offset-4"
-            href="https://www.papareact.com/course"
-          >
-            Join My Course ❤️
-          </Link>
-        </View>
-      </View>
-    </View>
-    </SafeAreaView>
   );
 }
