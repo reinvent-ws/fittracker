@@ -59,7 +59,6 @@ export default function ExerciseCard({
       className="bg-white rounded-2xl mb-4 shadow-sm border border-gray-100"
     >
       <View className="text-black">
-        <Text>Exercise Card</Text>
         <Text>{item.name}</Text>
         <Text>{item.description}</Text>
       </View>

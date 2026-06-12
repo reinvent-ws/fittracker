@@ -208,3 +208,16 @@ export type AllSanitySchemaTypes =
   | SanityImageAsset
   | Geopoint
   | Slug;
+
+// Source: ../src/app/(app)/(tabs)/exercices.tsx
+// Variable: exercisesQuery
+// Query: *[_type == "exercise"] {  }
+export type ExercisesQueryResult = Array<{}>;
+
+// Query TypeMap
+import "@sanity/client";
+declare module "@sanity/client" {
+  interface SanityQueries {
+    '*[_type == "exercise"] {\n  }': ExercisesQueryResult;
+  }
+}

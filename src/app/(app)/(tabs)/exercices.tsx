@@ -10,14 +10,17 @@ import {
 import React, { useEffect, useState } from "react";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
-import { defineQuery } from "groq";
 import { client } from "@/lib/sanity/client";
 import { Exercise } from "@/lib/sanity/types";
 import ExerciseCard from "@/app/components/ExerciseCard";
+import { defineQuery } from "groq";
 
 //Define the query outsite the component for proper type generation
-export const exercisesQuery = defineQuery(`*[_type == "exercise"] {
-  }`);
+export const exercisesQuery = defineQuery(
+  `*[_type == "exercise"] {
+    ...
+  }`,
+);
 
 export default function Exercices() {
   const [searchQuery, setSearchQuery] = React.useState<string>("");
@@ -42,12 +45,12 @@ export default function Exercices() {
     fetchExercises();
   }, []);
 
-  // useEffect(() => {
-  //   const filtered = exercises.filter((exercise: Exercise) =>
-  //     exercise.name.toLowerCase().includes(searchQuery.toLowerCase()),
-  //   );
-  //   setFilteredExercises(filtered);
-  // }, [searchQuery, exercises]);
+  useEffect(() => {
+    const filtered = exercises.filter((exercise: Exercise) =>
+      exercise.name.toLowerCase().includes(searchQuery.toLowerCase()),
+    );
+    setFilteredExercises(filtered);
+  }, [searchQuery, exercises]);
 
   const onRefresh = async () => {
     setRefreshing(true);
