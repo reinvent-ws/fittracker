@@ -1,5 +1,7 @@
+import { urlFor } from "@/lib/sanity/client";
 import { Exercise } from "@/lib/sanity/types";
-import { View, Text, TouchableOpacity } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
+import { View, Text, TouchableOpacity, Image } from "react-native";
 
 // const getDifficultyColor = (difficulty: string) => {
 //   switch (difficulty) {
@@ -58,9 +60,23 @@ export default function ExerciseCard({
       key={item._id}
       className="bg-white rounded-2xl mb-4 shadow-sm border border-gray-100"
     >
-      <View className="text-black">
-        <Text>{item.name}</Text>
-        <Text>{item.description}</Text>
+      <View className="flex-row p-6">
+        <View className="w-20 h-20 bg-white rounded-xl mr-4 overflow-hidden">
+          {item.imageUrl ? (
+            <Image
+              source={{ uri: item.imageUrl?.asset._ref }}
+              className="w-full h-full"
+              resizeMode="contain"
+            />
+          ) : (
+            <View
+              className="w-full h-full bg-gradient-to-br from-blue-400
+Oto-purple-500 items-center justify-center"
+            >
+              <Ionicons name="fitness" size={24} color="white" />
+            </View>
+          )}
+        </View>
       </View>
     </TouchableOpacity>
   );
