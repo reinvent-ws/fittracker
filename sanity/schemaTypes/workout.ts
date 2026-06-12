@@ -8,24 +8,34 @@ export default defineType({
     defineField({
       name: 'userId',
       title: 'User ID (Clerk)',
+      description: 'The Clerk user ID of the person who performed this workout',
+      type: 'string',
+      validation: (Rule) => Rule.required(),
+    }),
+    defineField({
+      name: 'userName',
+      title: 'User Name',
       type: 'string',
       validation: (Rule) => Rule.required(),
     }),
     defineField({
       name: 'date',
       title: 'Date',
+      description: 'The date when this workout was performed',
       type: 'datetime',
       validation: (Rule) => Rule.required(),
     }),
     defineField({
       name: 'duration',
       title: 'Duration (seconds)',
+      description: 'The total duration of the workout in seconds',
       type: 'number',
       validation: (Rule) => Rule.required().min(0).integer(),
     }),
     defineField({
       name: 'exercises',
       title: 'Exercises',
+      description: 'The exercises performed in this workout with sets, reps and weights',
       type: 'array',
       of: [
         defineArrayMember({
@@ -36,6 +46,7 @@ export default defineType({
             defineField({
               name: 'exercise',
               title: 'Exercise',
+              description: 'The exercise that was performed',
               type: 'reference',
               to: [{type: 'exercise'}],
               validation: (Rule) => Rule.required(),
@@ -52,7 +63,8 @@ export default defineType({
                   fields: [
                     defineField({
                       name: 'reps',
-                      title: 'Reps',
+                      title: 'Repetitions',
+                      description: 'How many repetitions were completed',
                       type: 'number',
                       validation: (Rule) => Rule.required().min(0).integer(),
                     }),
@@ -60,32 +72,35 @@ export default defineType({
                       name: 'weight',
                       title: 'Weight',
                       type: 'number',
+                      description: 'Amount of weight used for this set',
                       validation: (Rule) => Rule.required().min(0),
                     }),
                     defineField({
                       name: 'weightUnit',
                       title: 'Weight Unit',
+                      description: 'The unit of measurement for the weight',
                       type: 'string',
                       options: {
                         list: [
-                          {title: 'kg', value: 'kg'},
-                          {title: 'lbs', value: 'lbs'},
+                          {title: 'Pounds (lbs)', value: 'lbs'},
+                          {title: 'Kilograms (kg)', value: 'kg'},
                         ],
                         layout: 'radio',
                       },
                       initialValue: 'kg',
-                      validation: (Rule) => Rule.required(),
                     }),
                   ],
                   preview: {
                     select: {
-                      reps: 'reps',
+                      title: 'exercise.name',
+                      subtitle: 'reps',
                       weight: 'weight',
                       weightUnit: 'weightUnit',
                     },
-                    prepare({reps, weight, weightUnit}) {
+                    prepare({title, subtitle, weight, weightUnit}) {
                       return {
-                        title: `${reps} reps @ ${weight} ${weightUnit ?? ''}`,
+                        title: title || 'Exercise',
+                        subtitle: `${subtitle} reps ${weight ? weight + weightUnit : ''}`,
                       }
                     },
                   },
@@ -96,7 +111,7 @@ export default defineType({
           preview: {
             select: {
               exerciseName: 'exercise.name',
-              exerciseImage: 'exercise.image',
+              exerciseImage: 'exercise.imageUrl',
               sets: 'sets',
             },
             prepare({exerciseName, exerciseImage, sets}) {
@@ -114,18 +129,17 @@ export default defineType({
   ],
   preview: {
     select: {
-      userId: 'userId',
       date: 'date',
       duration: 'duration',
       exercises: 'exercises',
     },
-    prepare({userId, date, duration, exercises}) {
+    prepare({date, duration, exercises}) {
       const exerciseCount = exercises?.length ?? 0
       const formattedDate = date ? new Date(date).toLocaleDateString() : 'No date'
       const minutes = duration ? Math.floor(duration / 60) : 0
       return {
         title: `Workout — ${formattedDate}`,
-        subtitle: `${userId ?? 'Unknown user'} · ${exerciseCount} exercise${exerciseCount !== 1 ? 's' : ''} · ${minutes} min`,
+        subtitle: `${minutes} min · ${exerciseCount} exercise${exerciseCount !== 1 ? 's' : ''}`,
       }
     },
   },
