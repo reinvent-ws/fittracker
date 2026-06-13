@@ -211,13 +211,31 @@ export type AllSanitySchemaTypes =
 
 // Source: ../src/app/(app)/(tabs)/exercices.tsx
 // Variable: exercisesQuery
-// Query: *[_type == "exercise"] {  }
-export type ExercisesQueryResult = Array<{}>;
+// Query: *[_type == "exercise"] {    ...  }
+export type ExercisesQueryResult = Array<{
+  _id: string;
+  _type: "exercise";
+  _createdAt: string;
+  _updatedAt: string;
+  _rev: string;
+  name?: string;
+  description?: string;
+  difficulty?: "advanced" | "beginner" | "intermediate";
+  imageUrl?: {
+    asset?: SanityImageAssetReference;
+    media?: unknown;
+    hotspot?: SanityImageHotspot;
+    crop?: SanityImageCrop;
+    _type: "image";
+  };
+  videoUrl?: string;
+  isActive?: boolean;
+}>;
 
 // Query TypeMap
 import "@sanity/client";
 declare module "@sanity/client" {
   interface SanityQueries {
-    '*[_type == "exercise"] {\n  }': ExercisesQueryResult;
+    '*[_type == "exercise"] {\n    ...\n  }': ExercisesQueryResult;
   }
 }

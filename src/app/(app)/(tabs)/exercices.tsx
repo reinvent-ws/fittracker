@@ -63,10 +63,10 @@ export default function Exercices() {
       {/* Header */}
       <View className="px-6 py-4 bg-white border-b border-gray-200">
         <Text className="text-2xl font-bold Otext-gray-900">
-          Exercise Library
+          Biblioteca de Exercícios
         </Text>
         <Text className="Otext-gray-600 mt-1">
-          Discover and master new exercises
+          Descubra e domine novos exercícios
         </Text>
 
         {/* Search Bar */}
@@ -74,7 +74,7 @@ export default function Exercices() {
           <Ionicons name="search" size={20} color="#6B7280" />
           <TextInput
             className="flex-1 ml-3 Otext-gray-800"
-            placeholder="Search exercises ... "
+            placeholder="Buscar exercícios ... "
             placeholderTextColor="#9CA3AF"
             value={searchQuery}
             onChangeText={setSearchQuery}
@@ -85,6 +85,9 @@ export default function Exercices() {
             </TouchableOpacity>
           )}
         </View>
+        <View className="flex-1 w-fit h-fit bg-orange-400">
+          <Text>Test</Text>
+        </View>
 
         {/* Exercises List */}
         <FlatList
@@ -92,10 +95,11 @@ export default function Exercices() {
           keyExtractor={(item) => item._id}
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{ paddingVertical: 24 }}
+          className="mb-16"
           renderItem={({ item }) => (
             <ExerciseCard
               item={item}
-              onPress={() => router.push("/exercise-detail?id=${item ._ id}")}
+              onPress={() => router.push("/exercise-detail?id=${item._id}")}
             />
           )}
           refreshControl={
@@ -104,7 +108,7 @@ export default function Exercices() {
               onRefresh={onRefresh}
               colors={["#3B82F6"]} // Android
               tintColor="#3B82F6" // i0S
-              title="Pull to refresh exercises" // i0S
+              title="Puxe para atualizar os exercícios" // i0S
               titleColor="#6B7280" // i0S
             />
           }
@@ -112,12 +116,14 @@ export default function Exercices() {
             <View className="bg-white rounded-2xl p-8 items-center">
               <Ionicons name="fitness-outline" size={64} color="#9CA3AF" />
               <Text className="text-xl font-semibold Otext-gray-900 mt-4">
-                {searchQuery ? "No exercises found" : "Loading exercises ... "}
+                {!searchQuery
+                  ? "Nenhum exercício encontrado"
+                  : "Carregando exercícios ... "}
               </Text>
               <Text className="Otext-gray-600 text-center mt-2">
                 {searchQuery
-                  ? "Try adjusting your search"
-                  : "Your exercises will appear here"}
+                  ? "Tente ajustar sua pesquisa."
+                  : "Seus exercícios aparecerão aqui."}
               </Text>
             </View>
           }

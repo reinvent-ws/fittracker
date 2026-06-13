@@ -3,44 +3,18 @@ import { Exercise } from "@/lib/sanity/types";
 import { Ionicons } from "@expo/vector-icons";
 import { View, Text, TouchableOpacity, Image } from "react-native";
 
-// const getDifficultyColor = (difficulty: string) => {
-//   switch (difficulty) {
-//     case "beginner":
-//       return "bg-green-500";
-//     case "intermediate":
-//       return "bg-yellow-500";
-//     case "advanced":
-//       return "bg-red-500";
-//     default:
-//       return "bg-gray-500";
-//   }
-// };
-
-// const getDifficultyText = (difficulty: string) => {
-//   switch (difficulty) {
-//     case "beginner":
-//       return "Beginner";
-//     case "intermediate":
-//       return "Intermediate";
-//     case "advanced":
-//       return "Advanced";
-//     default:
-//       return "Unknown";
-//   }
-// };
-
 const getDifficulty = (
   difficulty: string,
 ): { color: string; title: string } => {
   switch (difficulty) {
     case "beginner":
-      return { color: "bg-green-500", title: "Beginner" };
+      return { color: "bg-green-400", title: "Iniciante" };
     case "intermediate":
-      return { color: "bg-yellow-500", title: "Intermediate" };
+      return { color: "bg-yellow-400", title: "Intermediário" };
     case "advanced":
-      return { color: "bg-red-500", title: "Advanced" };
+      return { color: "bg-red-400", title: "Avançado" };
     default:
-      return { color: "bg-gray-500", title: "Unknown" };
+      return { color: "bg-gray-400", title: "Desconhecido" };
   }
 };
 
@@ -58,25 +32,40 @@ export default function ExerciseCard({
   return (
     <TouchableOpacity
       key={item._id}
-      className="bg-white rounded-2xl mb-4 shadow-sm border border-gray-100"
+      className="bg-gray-50 rounded-2xl mb-4 shadow border border-gray-100"
     >
-      <View className="flex-row p-6">
-        <View className="w-20 h-20 bg-white rounded-xl mr-4 overflow-hidden">
-          {item.imageUrl ? (
-            <Image
-              source={{ uri: item.imageUrl?.asset._ref }}
-              className="w-full h-full"
-              resizeMode="contain"
-            />
-          ) : (
-            <View
-              className="w-full h-full bg-gradient-to-br from-blue-400
-Oto-purple-500 items-center justify-center"
-            >
-              <Ionicons name="fitness" size={24} color="white" />
+      <View className="flex-row w-fit p-2 items-center">
+        {item.imageUrl ? (
+          <>
+            <View className="w-20 h-20 rounded-xl mr-4 overflow-hidden">
+              <Image
+                source={{ uri: urlFor(item.imageUrl?.asset?._ref).url() }}
+                className="w-full h-full"
+                resizeMode="contain"
+              />
             </View>
-          )}
-        </View>
+            <View className="flex-1 justify-between gap-4">
+              <View className="flex-row items-center">
+                <Text className="flex-1 font-bold">{item.name}</Text>
+                <Text
+                  className={`${getDifficulty(item.difficulty).color} rounded-full px-2 py-[2px] text-[11px] text-white font-bold`}
+                >
+                  {getDifficulty(item.difficulty).title}
+                </Text>
+              </View>
+              <Text className={`text-[11px]`} numberOfLines={1}>
+                {item.description}
+              </Text>
+            </View>
+          </>
+        ) : (
+          <View
+            className="w-full h-full bg-gradient-to-br from-blue-400
+Oto-purple-500 items-center justify-center"
+          >
+            <Ionicons name="fitness" size={24} color="white" />
+          </View>
+        )}
       </View>
     </TouchableOpacity>
   );
