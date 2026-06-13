@@ -113,7 +113,7 @@ export default function Exercices() {
             <View className="bg-white rounded-2xl p-8 items-center">
               <Ionicons name="fitness-outline" size={64} color="#9CA3AF" />
               <Text className="text-xl font-semibold Otext-gray-900 mt-4">
-                {!searchQuery
+                {searchQuery
                   ? "Nenhum exercício encontrado"
                   : "Carregando exercícios ... "}
               </Text>
