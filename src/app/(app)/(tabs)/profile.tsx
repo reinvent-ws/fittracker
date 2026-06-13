@@ -22,14 +22,14 @@ export default function ProfilePage() {
   };
 
   return (
-    <SafeAreaView className="flexa-1 px-4">
+    <SafeAreaView className="flex-1 px-4 flex-row justify-between">
       <Text>Profile</Text>
 
       {/* Sign Out */}
-      <View className="px-6 mb-8">
+      <View className="">
         <TouchableOpacity
           onPress={handleSignOut}
-          className="bg-red-600 rounded-2xl p-4 shadow-sm"
+          className="bg-red-600 rounded-2xl px-4 py-1 shadow-sm"
           activeOpacity={0.8}
         >
           <View className="flex-row items-center justify-center">

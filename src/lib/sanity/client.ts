@@ -5,7 +5,7 @@ import imageUrlBuilder from "@sanity/image-url";
 const config = {
   projectId: "y0vrawvs",
   dataset: "production",
-  apiVersion: "2026-05-31",
+  apiVersion: "2026-05-15",
   useCdn: false,
 };
 

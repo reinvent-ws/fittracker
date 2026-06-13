@@ -5,66 +5,66 @@ export default function Layout() {
   return (
     <Tabs>
       <Tabs.Screen
-        name='index'
+        name="index"
         options={{
           headerShown: false,
-          title:"Home",
-          tabBarIcon: ({color, size}) => (
-            <AntDesign name='home' color={color} size={size}/>
-          )
+          title: "Inicial",
+          tabBarIcon: ({ color, size }) => (
+            <AntDesign name="home" color={color} size={size} />
+          ),
         }}
       />
       <Tabs.Screen
-        name='exercices'
+        name="exercices"
         options={{
-          title:"Exercices",
+          title: "Exercícios",
           headerShown: false,
-          tabBarIcon: ({color, size}) => (
-            <AntDesign name='book' color={color} size={size}/>
-          )
+          tabBarIcon: ({ color, size }) => (
+            <AntDesign name="bars" color={color} size={size} />
+          ),
         }}
       />
       <Tabs.Screen
-        name='workout'
+        name="workout"
         options={{
-          title:"Workout",
+          title: "Treino",
           headerShown: false,
-          tabBarIcon: ({color, size}) => (
-            <AntDesign name='plus-circle' color={color} size={size}/>
-          )
+          tabBarIcon: ({ color, size }) => (
+            <AntDesign name="plus-circle" color={color} size={size} />
+          ),
         }}
       />
       <Tabs.Screen
-        name='active-workout'
+        name="active-workout"
         options={{
-          title:"Active Workout",
+          title: "Treino Ativo",
           headerShown: false,
           href: null,
           tabBarStyle: {
-              display: 'none'
-          }
+            display: "none",
+          },
         }}
       />
       <Tabs.Screen
-        name='history'
+        name="history"
         options={{
-          title:"History",
+          title: "Histórico",
           headerShown: false,
-          tabBarIcon: ({color, size}) => (
-            <AntDesign name='clock-circle' color={color} size={size}/>
-          )
+          tabBarIcon: ({ color, size }) => (
+            <AntDesign name="clock-circle" color={color} size={size} />
+          ),
         }}
       />
       <Tabs.Screen
-        name='profile'
+        name="profile"
         options={{
           headerShown: false,
-          title:"Profile",
-          tabBarIcon: ({color, size}) => (
-            <AntDesign name='user' color={color} size={size}/>
-          )
+          title: "Perfil",
+          tabBarIcon: ({ color, size }) => (
+            <AntDesign name="user" color={color} size={size} />
+          ),
         }}
       />
     </Tabs>
-  )
+  );
 }

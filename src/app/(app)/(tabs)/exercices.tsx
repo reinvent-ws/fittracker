@@ -85,9 +85,6 @@ export default function Exercices() {
             </TouchableOpacity>
           )}
         </View>
-        <View className="flex-1 w-fit h-fit bg-orange-400">
-          <Text>Test</Text>
-        </View>
 
         {/* Exercises List */}
         <FlatList
@@ -99,7 +96,7 @@ export default function Exercices() {
           renderItem={({ item }) => (
             <ExerciseCard
               item={item}
-              onPress={() => router.push("/exercise-detail?id=${item._id}")}
+              onPress={() => router.push(`/exercise-detail?id=${item._id}`)}
             />
           )}
           refreshControl={
