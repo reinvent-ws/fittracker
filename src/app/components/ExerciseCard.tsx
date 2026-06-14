@@ -1,22 +1,8 @@
 import { urlFor } from "@/lib/sanity/client";
 import { Exercise } from "@/lib/sanity/types";
+import { getDifficulty } from "@/utils";
 import { Ionicons } from "@expo/vector-icons";
 import { View, Text, TouchableOpacity, Image } from "react-native";
-
-const getDifficulty = (
-  difficulty: string,
-): { color: string; title: string } => {
-  switch (difficulty) {
-    case "beginner":
-      return { color: "bg-green-400", title: "Iniciante" };
-    case "intermediate":
-      return { color: "bg-yellow-400", title: "Intermediário" };
-    case "advanced":
-      return { color: "bg-red-400", title: "Avançado" };
-    default:
-      return { color: "bg-gray-400", title: "Desconhecido" };
-  }
-};
 
 type ExerciseCardProps = {
   item: Exercise;
@@ -49,7 +35,7 @@ export default function ExerciseCard({
               <View className="flex-row items-center">
                 <Text className="flex-1 font-bold">{item.name}</Text>
                 <Text
-                  className={`${getDifficulty(item.difficulty).color} rounded-full px-2 py-[2px] text-[11px] text-white`}
+                  className={`${getDifficulty(item.difficulty).color} rounded-full px-2 py-[2px] text-[10px] text-white`}
                 >
                   {getDifficulty(item.difficulty).title}
                 </Text>
