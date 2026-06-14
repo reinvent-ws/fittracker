@@ -21,6 +21,8 @@ export default function ExerciseDetail() {
   const router = useRouter();
   const [exercise, setExercise] = useState<Exercise>();
   const [loading, setLoading] = useState<boolean>(false);
+  const [aiLoading, setAiLoading] = useState<boolean>(false);
+  const [aiGuidance, setAiGuidance] = useState<boolean>(false);
   const { id } = useLocalSearchParams<{ id: string }>();
   const singleExerciseQuery = defineQuery(
     `*[_type == "exercise" && _id == $id][0]`,
@@ -31,9 +33,12 @@ export default function ExerciseDetail() {
       if (!id) return;
 
       const exerciseData = await client.fetch(singleExerciseQuery, { id });
+      setLoading(true);
       setExercise(exerciseData);
     } catch (error) {
       console.error("Error fetching id exercise: ", error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -51,6 +56,26 @@ export default function ExerciseDetail() {
       </SafeAreaView>
     );
   }
+
+  if (!exercise) {
+    return (
+      <SafeAreaView className="flex-1 bg-white">
+        <View className="flex-1 items-center justify-center">
+          <Text className="text-gray-500 text-center">
+            Exercício não foi encontrado: {id}
+          </Text>
+          <TouchableOpacity
+            onPress={() => router.back()}
+            className="mt-4 bg-blue-500 px-6 py-2 rounded-lg"
+          >
+            <Text className="text-white font-semibold">Voltar</Text>
+          </TouchableOpacity>
+        </View>
+      </SafeAreaView>
+    );
+  }
+
+  const getAiGulidance = () => {};
 
   return (
     <SafeAreaView className="flex-1 bg-white">
@@ -143,6 +168,48 @@ export default function ExerciseDetail() {
               </TouchableOpacity>
             </View>
           )}
+
+          {/* TODO: AI Guidance */}
+
+          {/* ----------------- */}
+
+          {/* Action Buttons */}
+
+          <View className="mt-8 gap-2">
+            {/* AI Coach Button */}
+            <TouchableOpacity
+              className={`rounded-xl py-4 items-center ${
+                aiLoading
+                  ? "bg-gray-400"
+                  : aiGuidance
+                    ? "bg-green-500"
+                    : "Dbg-blue-500"
+              }`}
+              onPress={getAiGulidance}
+              disabled={aiLoading}
+            >
+              {aiLoading ? (
+                <View className="flex-row items-center">
+                  <ActivityIndicator size="small" color="white" />
+                  <Text className="text-white font-bold text-lg ml-2">
+                    Loading ...
+                  </Text>
+                </View>
+              ) : (
+                <Text className="text-white font-bold text-lg">
+                  {aiGuidance
+                    ? "Refresh AI Guidance"
+                    : "Get AI Guidance on Form & Technique"}
+                </Text>
+              )}
+            </TouchableOpacity>
+            <TouchableOpacity
+              className="bg-gray-200 rounded-xl py-4 items-center"
+              onPress={() => router.back()}
+            >
+              <Text className="text-gray-800 font-bold text-lg">Close</Text>
+            </TouchableOpacity>
+          </View>
         </View>
       </ScrollView>
     </SafeAreaView>
