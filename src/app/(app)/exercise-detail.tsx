@@ -88,6 +88,10 @@ export default function ExerciseDetail() {
         body: JSON.stringify({ exerciseName: exercise?.name }),
       });
 
+      if (!response.ok) {
+        throw new Error("Failed to fetch AI Guidance");
+      }
+
       const data = await response.json();
       setAiGuidance(data.message);
     } catch (error) {

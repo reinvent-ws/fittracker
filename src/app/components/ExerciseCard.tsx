@@ -19,7 +19,7 @@ export default function ExerciseCard({
     <TouchableOpacity
       key={item._id}
       onPress={onPress}
-      className="bg-gray-50 rounded-2xl mb-4 shadow border border-gray-100"
+      className="bg-gray-50 rounded-2xl mb-4 p-2 border border-gray-100"
     >
       <View className="flex-row w-fit p-2 items-center">
         {item.imageUrl ? (
@@ -40,9 +40,19 @@ export default function ExerciseCard({
                   {getDifficulty(item.difficulty).title}
                 </Text>
               </View>
-              <Text className={`text-[11px] text-gray-600`} numberOfLines={2}>
-                {item.description}
-              </Text>
+              <View className="flex-row justify-between items-center gap-2">
+                <Text
+                  className={`flex-1 text-[11px] text-gray-600`}
+                  numberOfLines={2}
+                >
+                  {item.description}
+                </Text>
+                <Ionicons
+                  name="chevron-forward-outline"
+                  size={16}
+                  color="gray"
+                />
+              </View>
             </View>
           </>
         ) : (
