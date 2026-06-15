@@ -24,6 +24,7 @@ export default function ExerciseDetail() {
   const [aiLoading, setAiLoading] = useState<boolean>(false);
   const [aiGuidance, setAiGuidance] = useState<boolean>(false);
   const { id } = useLocalSearchParams<{ id: string }>();
+
   const singleExerciseQuery = defineQuery(
     `*[_type == "exercise" && _id == $id][0]`,
   );
@@ -75,7 +76,26 @@ export default function ExerciseDetail() {
     );
   }
 
-  const getAiGulidance = () => {};
+  const getAiGuidance = async () => {
+    if (!exercise) return;
+
+    setAiLoading(true);
+
+    try {
+      const response = await fetch("/api/ai", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ exerciseName: exercise?.name }),
+      });
+
+      const data = await response.json();
+      setAiGuidance(data.message);
+    } catch (error) {
+      console.error("Error fetching AI guidance:", error);
+    } finally {
+      setAiLoading(false);
+    }
+  };
 
   return (
     <SafeAreaView className="flex-1 bg-white">
@@ -178,36 +198,36 @@ export default function ExerciseDetail() {
           <View className="mt-8 gap-2">
             {/* AI Coach Button */}
             <TouchableOpacity
-              className={`rounded-xl py-4 items-center ${
+              className={`rounded-xl py-2 items-center ${
                 aiLoading
                   ? "bg-gray-400"
                   : aiGuidance
                     ? "bg-green-500"
-                    : "Dbg-blue-500"
+                    : "bg-blue-500"
               }`}
-              onPress={getAiGulidance}
+              onPress={getAiGuidance}
               disabled={aiLoading}
             >
               {aiLoading ? (
                 <View className="flex-row items-center">
                   <ActivityIndicator size="small" color="white" />
                   <Text className="text-white font-bold text-lg ml-2">
-                    Loading ...
+                    Carregando ...
                   </Text>
                 </View>
               ) : (
-                <Text className="text-white font-bold text-lg">
+                <Text className="text-white font-bold text-lg text-center">
                   {aiGuidance
-                    ? "Refresh AI Guidance"
-                    : "Get AI Guidance on Form & Technique"}
+                    ? "Atualize as orientações da IA"
+                    : "Receba orientações da IA\nsobre forma e técnica"}
                 </Text>
               )}
             </TouchableOpacity>
             <TouchableOpacity
-              className="bg-gray-200 rounded-xl py-4 items-center"
+              className="bg-gray-200 rounded-xl py-2 items-center"
               onPress={() => router.back()}
             >
-              <Text className="text-gray-800 font-bold text-lg">Close</Text>
+              <Text className="text-gray-800 font-bold text-lg">Fechar</Text>
             </TouchableOpacity>
           </View>
         </View>
