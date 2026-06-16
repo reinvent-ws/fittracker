@@ -16,6 +16,7 @@ import { client, urlFor } from "@/lib/sanity/client";
 import { Exercise } from "sanity/sanity.types";
 import { Ionicons } from "@expo/vector-icons";
 import { getDifficulty } from "@/utils";
+import { Markdown } from "react-native-markdown-display";
 
 export default function ExerciseDetail() {
   const router = useRouter();
@@ -194,11 +195,53 @@ export default function ExerciseDetail() {
           )}
 
           {/* TODO: AI Guidance */}
+          {(aiGuidance || aiLoading) && (
+            <View className="mb-6">
+              <View className="flex-row items-center mb-3">
+                <Ionicons name="fitness" size={24} color="#3B82F6" />
+                <Text className="text-xl font-semibold Otext-gray-800 ml-2">
+                  O Personal de IA orienta ...
+                </Text>
+              </View>
 
-          {/* ----------------- */}
+              {aiLoading ? (
+                <View className="bg-gray-50 rounded-xl p-4 items-center">
+                  <ActivityIndicator size="small" color="#3B82F6" />
+                  <Text className="Otext-gray-600 mt-2">
+                    Obtenha a orientação personalizada ...
+                  </Text>
+                </View>
+              ) : (
+                <View className="bg-blue-50 rounded-xl p-4 border-1-4">
+                  <Markdown
+                    style={{
+                      body: {
+                        paddingBottom: 20,
+                      },
+                      heading2: {
+                        fontSize: 18,
+                        fontWeight: "bold",
+                        color: "#1f2937",
+                        marginTop: 12,
+                        marginBottom: 6,
+                      },
+                      heading3: {
+                        fontSize: 16,
+                        fontWeight: "600",
+                        color: "#374151",
+                        marginTop: 8,
+                        marginBottom: 4,
+                      },
+                    }}
+                  >
+                    {aiGuidance}
+                  </Markdown>
+                </View>
+              )}
+            </View>
+          )}
 
           {/* Action Buttons */}
-
           <View className="mt-8 gap-2">
             {/* AI Coach Button */}
             <TouchableOpacity
