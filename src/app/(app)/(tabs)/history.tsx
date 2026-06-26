@@ -1,6 +1,6 @@
 import { client } from "@/lib/sanity/client";
 import { GetWorkoutsQueryResult, Workout } from "@/lib/sanity/types";
-import { formatDuration } from "@/utils";
+import { formatDate, formatDuration } from "@/utils";
 import { useUser } from "@clerk/clerk-expo";
 import { Ionicons } from "@expo/vector-icons";
 import { useLocalSearchParams, useRouter } from "expo-router";
@@ -17,25 +17,33 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-export const getWorkoutsQuery =
-  defineQuery(`*[_type == "workout" && userId == "user_123456"] {
+export const getWorkoutsQuery = defineQuery(`
+  *[_type == "workout"] | order(date desc) {
     _id,
     date,
     duration,
+    // Acessa o array de exercícios
     exercises[] {
-      _id,
-      name
-    },
-    sets[] {
-      reps,
-      weight,
-      weightUnit,
+      _key,
       _type,
-      _key
+      // Entra no objeto interno 'exercise' para buscar os dados dele
+      exercise-> {
+        _id,
+        name
+      },
+      // Busca o array 'sets' que está no mesmo nível de 'exercise'
+      sets[] {
+        reps,
+        weight,
+        weightUnit,
+        _type,
+        _key
+      }
     },
     _type,
     _key
-}`);
+  }
+`);
 
 export default function HistoryPage() {
   const { user } = useUser();
@@ -78,28 +86,17 @@ export default function HistoryPage() {
     }
   });
 
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    const today = new Date();
-    const yesterday = new Date(today);
-    yesterday.setDate(yesterday.getDate() - 1);
-
-    if (date.toDateString() === today.toDateString()) {
-      return "Today";
-    } else if (date.toDateString() === yesterday.toDateString()) {
-      return "Yesterday";
-    } else {
-      return date.toLocaleDateString("pt-BR", {
-        weekday: "short",
-        month: "short",
-        day: "numeric",
-      });
-    }
-  };
-
   const formatWorkoutDuration = (seconds?: number) => {
     if (!seconds) return "Duration not recorded";
     return formatDuration(seconds);
+  };
+
+  const getTotalSets = (workout: Workout) => {
+    return (
+      workout.exercises?.reduce((total, exercise) => {
+        return total + (exercise.sets?.length || 0);
+      }, 0) || 0
+    );
   };
 
   if (loading) {
@@ -188,6 +185,22 @@ export default function HistoryPage() {
                       size={24}
                       color="#3B82F6"
                     />
+                  </View>
+                </View>
+
+                {/* Workout Stats */}
+                <View className="flex-row items-center justify-between mb-4">
+                  <View className="flex-row items-center">
+                    <View className="bg-gray-100 rounded-lg px-3 py-2 mr-3">
+                      <Text className="text-sm font-medium Otext-gray-700">
+                        {workout.exercises?.length || 0} exercícios
+                      </Text>
+                    </View>
+                    <View className="bg-gray-100 rounded-lg px-3 py-2">
+                      <Text className="text-sm font-medium Otext-gray-700">
+                        {getTotalSets(workout)} séries
+                      </Text>
+                    </View>
                   </View>
                 </View>
               </TouchableOpacity>
