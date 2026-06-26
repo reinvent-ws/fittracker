@@ -176,10 +176,7 @@ export default function HistoryPage() {
                       </Text>
                     </View>
                   </View>
-                  <View
-                    className="bg-blue-100 rounded-full w-12 h-12
-                  items-center justify-center"
-                  >
+                  <View className="bg-blue-100 rounded-full w-12 h-12 items-center justify-center">
                     <Ionicons
                       name="fitness-outline"
                       size={24}
