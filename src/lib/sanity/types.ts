@@ -15,37 +15,6 @@
 export declare const internalGroqTypeReferenceTo: unique symbol;
 
 // Source: schema.json
-export type ExerciseReference = {
-  _ref: string;
-  _type: "reference";
-  _weak?: boolean;
-  [internalGroqTypeReferenceTo]?: "exercise";
-};
-
-export type Workout = {
-  _id: string;
-  _type: "workout";
-  _createdAt: string;
-  _updatedAt: string;
-  _rev: string;
-  userId?: string;
-  userName?: string;
-  date?: string;
-  duration?: number;
-  exercises?: Array<{
-    exercise?: ExerciseReference;
-    sets?: Array<{
-      reps?: number;
-      weight?: number;
-      weightUnit?: "lbs" | "kg";
-      _type: "set";
-      _key: string;
-    }>;
-    _type: "workoutExercise";
-    _key: string;
-  }>;
-};
-
 export type SanityImageAssetReference = {
   _ref: string;
   _type: "reference";
@@ -53,9 +22,9 @@ export type SanityImageAssetReference = {
   [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
 };
 
-export type Exercise = {
+export type History = {
   _id: string;
-  _type: "exercise";
+  _type: "history";
   _createdAt: string;
   _updatedAt: string;
   _rev: string;
@@ -87,6 +56,57 @@ export type SanityImageHotspot = {
   y?: number;
   height?: number;
   width?: number;
+};
+
+export type ExerciseReference = {
+  _ref: string;
+  _type: "reference";
+  _weak?: boolean;
+  [internalGroqTypeReferenceTo]?: "exercise";
+};
+
+export type Workout = {
+  _id: string;
+  _type: "workout";
+  _createdAt: string;
+  _updatedAt: string;
+  _rev: string;
+  userId?: string;
+  userName?: string;
+  date?: string;
+  duration?: number;
+  exercises?: Array<{
+    exercise?: ExerciseReference;
+    sets?: Array<{
+      reps?: number;
+      weight?: number;
+      weightUnit?: "lbs" | "kg";
+      _type: "set";
+      _key: string;
+    }>;
+    _type: "workoutExercise";
+    _key: string;
+  }>;
+};
+
+export type Exercise = {
+  _id: string;
+  _type: "exercise";
+  _createdAt: string;
+  _updatedAt: string;
+  _rev: string;
+  name?: string;
+  description?: string;
+  difficulty?: "beginner" | "intermediate" | "advanced";
+  imageUrl?: {
+    asset?: SanityImageAssetReference;
+    media?: unknown;
+    hotspot?: SanityImageHotspot;
+    crop?: SanityImageCrop;
+    _type: "image";
+  };
+  videoUrl?: string;
+  isActive?: boolean;
 };
 
 export type SanityImagePaletteSwatch = {
@@ -193,12 +213,13 @@ export type Slug = {
 };
 
 export type AllSanitySchemaTypes =
-  | ExerciseReference
-  | Workout
   | SanityImageAssetReference
-  | Exercise
+  | History
   | SanityImageCrop
   | SanityImageHotspot
+  | ExerciseReference
+  | Workout
+  | Exercise
   | SanityImagePaletteSwatch
   | SanityImagePalette
   | SanityImageDimensions
@@ -232,6 +253,21 @@ export type ExercisesQueryResult = Array<{
   isActive?: boolean;
 }>;
 
+// Source: ../src/app/(app)/(tabs)/history.tsx
+// Variable: getWorkoutsQuery
+// Query: *[_type == "workout" && userId == $userId] | order(date desc) {    _id,    date,    exercises[] {      _id,      name    },    sets[] {      reps,      weight,      weightUnit,      _type,      _key    },    _type,    _key}
+export type GetWorkoutsQueryResult = Array<{
+  _id: string;
+  date: string | null;
+  exercises: Array<{
+    _id: null;
+    name: null;
+  }> | null;
+  sets: null;
+  _type: "workout";
+  _key: null;
+}>;
+
 // Source: ../src/app/(app)/exercise-detail.tsx
 // Variable: singleExerciseQuery
 // Query: *[_type == "exercise" && _id == $id][0]
@@ -260,6 +296,7 @@ import "@sanity/client";
 declare module "@sanity/client" {
   interface SanityQueries {
     '*[_type == "exercise"] {\n    ...\n  }': ExercisesQueryResult;
+    '*[_type == "workout" && userId == $userId] | order(date desc) {\n    _id,\n    date,\n    exercises[] {\n      _id,\n      name\n    },\n    sets[] {\n      reps,\n      weight,\n      weightUnit,\n      _type,\n      _key\n    },\n    _type,\n    _key\n}': GetWorkoutsQueryResult;
     '*[_type == "exercise" && _id == $id][0]': SingleExerciseQueryResult;
   }
 }

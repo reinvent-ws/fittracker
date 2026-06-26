@@ -1,11 +1,200 @@
-import React from "react";
-import { Text } from "react-native";
-import {SafeAreaView} from 'react-native-safe-area-context'
+import { client } from "@/lib/sanity/client";
+import { GetWorkoutsQueryResult, Workout } from "@/lib/sanity/types";
+import { formatDuration } from "@/utils";
+import { useUser } from "@clerk/clerk-expo";
+import { Ionicons } from "@expo/vector-icons";
+import { useLocalSearchParams, useRouter } from "expo-router";
+import { defineQuery } from "groq";
+import React, { useEffect, useState } from "react";
+import {
+  ActivityIndicator,
+  FlatList,
+  RefreshControl,
+  ScrollView,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
-export default function Page() {
+export const getWorkoutsQuery =
+  defineQuery(`*[_type == "workout" && userId == "user_123456"] {
+    _id,
+    date,
+    duration,
+    exercises[] {
+      _id,
+      name
+    },
+    sets[] {
+      reps,
+      weight,
+      weightUnit,
+      _type,
+      _key
+    },
+    _type,
+    _key
+}`);
+
+export default function HistoryPage() {
+  const { user } = useUser();
+  const [workouts, setWorkouts] = useState<Workout[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [refreshing, setRefreshing] = useState<boolean>(false);
+  const { refresh } = useLocalSearchParams();
+  const router = useRouter();
+
+  const fetchWorkouts = async () => {
+    if (!user.id) return;
+
+    try {
+      const results = await client.fetch(getWorkoutsQuery, { userId: user.id });
+      console.log("Workouts: ", results);
+      setWorkouts(results);
+    } catch (error) {
+      console.error("Error fetching workouts: ", error);
+    } finally {
+      setLoading(false);
+      setRefreshing(false);
+    }
+  };
+
+  const onRefresh = async () => {
+    setRefreshing(true);
+    await fetchWorkouts();
+    setRefreshing(false);
+  };
+
+  useEffect(() => {
+    fetchWorkouts();
+  }, [user.id]);
+
+  useEffect(() => {
+    if (refresh === "true") {
+      fetchWorkouts();
+      // Clear the refresh parameter from the URL
+      router.replace("/(app)/(tabs)/history");
+    }
+  });
+
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    const today = new Date();
+    const yesterday = new Date(today);
+    yesterday.setDate(yesterday.getDate() - 1);
+
+    if (date.toDateString() === today.toDateString()) {
+      return "Today";
+    } else if (date.toDateString() === yesterday.toDateString()) {
+      return "Yesterday";
+    } else {
+      return date.toLocaleDateString("pt-BR", {
+        weekday: "short",
+        month: "short",
+        day: "numeric",
+      });
+    }
+  };
+
+  const formatWorkoutDuration = (seconds?: number) => {
+    if (!seconds) return "Duration not recorded";
+    return formatDuration(seconds);
+  };
+
+  if (loading) {
+    return (
+      <SafeAreaView className="flex-1 bg-gray-50">
+        <View className="px-6 py-4 bg-white border-b border-gray-200">
+          <Text className="text-2xl font-bold Otext-gray-900">
+            Histórico de Treinos
+          </Text>
+        </View>
+        <View className="flex-1 items-center justify-center">
+          <ActivityIndicator size="large" color="#3B82F6" />
+          <Text className="Otext-gray-600 mt-4">
+            Carregando seus treinos ...
+          </Text>
+        </View>
+      </SafeAreaView>
+    );
+  }
+
   return (
-    <SafeAreaView className="flex-1 px-4">
-      <Text>History</Text>
+    <SafeAreaView className="flex-1 bg-gray-50">
+      {/* Header */}
+      <View className="px-6 py-4 bg-white border-b">
+        <Text className="text-2xl font-bold Otext-gray-900">
+          Histórico de Treinos
+        </Text>
+        <Text className="Otext-gray-600 mt-1">
+          {workouts.length} treino{workouts.length !== 1 ? "s" : ""} completado
+          {workouts.length !== 1 ? "s" : ""}
+        </Text>
+      </View>
+      {/* Workouts List */}
+      <ScrollView
+        className="flex-1"
+        contentContainerStyle={{ padding: 24 }}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
+      >
+        {workouts.length === 0 ? (
+          <View className="bg-white rounded-2xl p-8 items-center">
+            <Ionicons name="barbell-outline" size={64} color="#9CA3AF" />
+            <Text className="text-xl font-semibold Otext-gray-900 mt-4">
+              Não há treinos disponíveis!
+            </Text>
+            <Text className="text-gray-600 text-center mt-2">
+              Seus treinos concluídos aparecerão aqui.
+            </Text>
+          </View>
+        ) : (
+          <View className="space-y-4 gap-4">
+            {workouts.map((workout) => (
+              <TouchableOpacity
+                key={workout._id}
+                className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100"
+                activeOpacity={0.7}
+                onPress={() => {
+                  router.push({
+                    pathname: "/history/workout-record",
+                    params: {
+                      workoutId: workout._id,
+                    },
+                  });
+                }}
+              >
+                {/* Workout Header */}
+                <View className="flex-row items-center justify-between mb-4">
+                  <View className="flex-1">
+                    <Text className="text-lg font-semibold text-gray-900">
+                      {formatDate(workout.date || "")}
+                    </Text>
+                    <View className="flex-row items-center mt-1">
+                      <Ionicons name="time-outline" size={16} color="#6B7280" />
+                      <Text className="Otext-gray-600 ml-2">
+                        {formatWorkoutDuration(workout.duration)}
+                      </Text>
+                    </View>
+                  </View>
+                  <View
+                    className="bg-blue-100 rounded-full w-12 h-12
+                  items-center justify-center"
+                  >
+                    <Ionicons
+                      name="fitness-outline"
+                      size={24}
+                      color="#3B82F6"
+                    />
+                  </View>
+                </View>
+              </TouchableOpacity>
+            ))}
+          </View>
+        )}
+      </ScrollView>
     </SafeAreaView>
   );
 }
