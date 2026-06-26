@@ -99,6 +99,12 @@ export default function HistoryPage() {
     );
   };
 
+  const getExerciseNames = (workout: GetWorkoutsQueryResult | any) => {
+    return (
+      workout.exercises?.map((ex) => ex.exercise?.name).filter(Boolean) || []
+    );
+  };
+
   if (loading) {
     return (
       <SafeAreaView className="flex-1 bg-gray-50">
@@ -152,7 +158,7 @@ export default function HistoryPage() {
             {workouts.map((workout) => (
               <TouchableOpacity
                 key={workout._id}
-                className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100"
+                className="bg-white rounded-2xl p-6 shadow-md border border-gray-100"
                 activeOpacity={0.7}
                 onPress={() => {
                   router.push({
@@ -200,6 +206,36 @@ export default function HistoryPage() {
                     </View>
                   </View>
                 </View>
+
+                {/* Exercise List */}
+                {workout.exercises && workout.exercises.length > 0 && (
+                  <View>
+                    <Text className="text-sm font-medium Otext-gray-700 mb-2">
+                      Exercícios:
+                    </Text>
+                    <View className="flex-row flex-wrap">
+                      {getExerciseNames(workout)
+                        .slice(0, 3)
+                        .map((name, index) => (
+                          <View
+                            key={index}
+                            className="bg-blue-50 rounded-lg px-3 py-1 mr-2 mb-2"
+                          >
+                            <Text className="Otext-blue-700 text-sm font-medium">
+                              {name}
+                            </Text>
+                          </View>
+                        ))}
+                      {getExerciseNames(workout).length > 3 && (
+                        <View className="bg-gray-100 rounded-lg px-3 py-1 mr-2 mb-2">
+                          <Text className="Otext-gray-600 text-sm font-medium">
+                            +{getExerciseNames(workout).length - 3} more
+                          </Text>
+                        </View>
+                      )}
+                    </View>
+                  </View>
+                )}
               </TouchableOpacity>
             ))}
           </View>
