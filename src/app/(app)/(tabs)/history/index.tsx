@@ -47,7 +47,7 @@ export const getWorkoutsQuery = defineQuery(`
 
 export default function HistoryPage() {
   const { user } = useUser();
-  const [workouts, setWorkouts] = useState<Workout[]>([]);
+  const [workouts, setWorkouts] = useState<Workout[] | any>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [refreshing, setRefreshing] = useState<boolean>(false);
   const { refresh } = useLocalSearchParams();

@@ -15,49 +15,6 @@
 export declare const internalGroqTypeReferenceTo: unique symbol;
 
 // Source: schema.json
-export type SanityImageAssetReference = {
-  _ref: string;
-  _type: "reference";
-  _weak?: boolean;
-  [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
-};
-
-export type History = {
-  _id: string;
-  _type: "history";
-  _createdAt: string;
-  _updatedAt: string;
-  _rev: string;
-  name?: string;
-  description?: string;
-  difficulty?: "beginner" | "intermediate" | "advanced";
-  imageUrl?: {
-    asset?: SanityImageAssetReference;
-    media?: unknown;
-    hotspot?: SanityImageHotspot;
-    crop?: SanityImageCrop;
-    _type: "image";
-  };
-  videoUrl?: string;
-  isActive?: boolean;
-};
-
-export type SanityImageCrop = {
-  _type: "sanity.imageCrop";
-  top?: number;
-  bottom?: number;
-  left?: number;
-  right?: number;
-};
-
-export type SanityImageHotspot = {
-  _type: "sanity.imageHotspot";
-  x?: number;
-  y?: number;
-  height?: number;
-  width?: number;
-};
-
 export type ExerciseReference = {
   _ref: string;
   _type: "reference";
@@ -89,6 +46,13 @@ export type Workout = {
   }>;
 };
 
+export type SanityImageAssetReference = {
+  _ref: string;
+  _type: "reference";
+  _weak?: boolean;
+  [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
+};
+
 export type Exercise = {
   _id: string;
   _type: "exercise";
@@ -107,6 +71,22 @@ export type Exercise = {
   };
   videoUrl?: string;
   isActive?: boolean;
+};
+
+export type SanityImageCrop = {
+  _type: "sanity.imageCrop";
+  top?: number;
+  bottom?: number;
+  left?: number;
+  right?: number;
+};
+
+export type SanityImageHotspot = {
+  _type: "sanity.imageHotspot";
+  x?: number;
+  y?: number;
+  height?: number;
+  width?: number;
 };
 
 export type SanityImagePaletteSwatch = {
@@ -213,13 +193,12 @@ export type Slug = {
 };
 
 export type AllSanitySchemaTypes =
-  | SanityImageAssetReference
-  | History
-  | SanityImageCrop
-  | SanityImageHotspot
   | ExerciseReference
   | Workout
+  | SanityImageAssetReference
   | Exercise
+  | SanityImageCrop
+  | SanityImageHotspot
   | SanityImagePaletteSwatch
   | SanityImagePalette
   | SanityImageDimensions
@@ -253,20 +232,58 @@ export type ExercisesQueryResult = Array<{
   isActive?: boolean;
 }>;
 
-// Source: ../src/app/(app)/(tabs)/history.tsx
+// Source: ../src/app/(app)/(tabs)/history/index.tsx
 // Variable: getWorkoutsQuery
-// Query: *[_type == "workout" && userId == $userId] | order(date desc) {    _id,    date,    exercises[] {      _id,      name    },    sets[] {      reps,      weight,      weightUnit,      _type,      _key    },    _type,    _key}
+// Query: *[_type == "workout"] | order(date desc) {    _id,    date,    duration,    // Acessa o array de exercícios    exercises[] {      _key,      _type,      // Entra no objeto interno 'exercise' para buscar os dados dele      exercise-> {        _id,        name      },      // Busca o array 'sets' que está no mesmo nível de 'exercise'      sets[] {        reps,        weight,        weightUnit,        _type,        _key      }    },    _type,    _key  }
 export type GetWorkoutsQueryResult = Array<{
   _id: string;
   date: string | null;
+  duration: number | null;
   exercises: Array<{
-    _id: null;
-    name: null;
+    _key: string;
+    _type: "workoutExercise";
+    exercise: {
+      _id: string;
+      name: string | null;
+    } | null;
+    sets: Array<{
+      reps: number | null;
+      weight: number | null;
+      weightUnit: "kg" | "lbs" | null;
+      _type: "set";
+      _key: string;
+    }> | null;
   }> | null;
-  sets: null;
   _type: "workout";
   _key: null;
 }>;
+
+// Source: ../src/app/(app)/(tabs)/history/workout-record.tsx
+// Variable: getWorkoutRecordQuery
+// Query: *[_type == "workout" && _id == $workoutId][0] {_id,_type,_createdAt,date,duration,exercises[] {  exercise-> {    _id,    name,    description    },    sets[] {    reps,    weight,    weightUnit,    _type,    _key    },  _type,  _key  } }
+export type GetWorkoutRecordQueryResult = {
+  _id: string;
+  _type: "workout";
+  _createdAt: string;
+  date: string | null;
+  duration: number | null;
+  exercises: Array<{
+    exercise: {
+      _id: string;
+      name: string | null;
+      description: string | null;
+    } | null;
+    sets: Array<{
+      reps: number | null;
+      weight: number | null;
+      weightUnit: "kg" | "lbs" | null;
+      _type: "set";
+      _key: string;
+    }> | null;
+    _type: "workoutExercise";
+    _key: string;
+  }> | null;
+} | null;
 
 // Source: ../src/app/(app)/exercise-detail.tsx
 // Variable: singleExerciseQuery
@@ -296,7 +313,8 @@ import "@sanity/client";
 declare module "@sanity/client" {
   interface SanityQueries {
     '*[_type == "exercise"] {\n    ...\n  }': ExercisesQueryResult;
-    '*[_type == "workout" && userId == $userId] | order(date desc) {\n    _id,\n    date,\n    exercises[] {\n      _id,\n      name\n    },\n    sets[] {\n      reps,\n      weight,\n      weightUnit,\n      _type,\n      _key\n    },\n    _type,\n    _key\n}': GetWorkoutsQueryResult;
+    "\n  *[_type == \"workout\"] | order(date desc) {\n    _id,\n    date,\n    duration,\n    // Acessa o array de exerc\xEDcios\n    exercises[] {\n      _key,\n      _type,\n      // Entra no objeto interno 'exercise' para buscar os dados dele\n      exercise-> {\n        _id,\n        name\n      },\n      // Busca o array 'sets' que est\xE1 no mesmo n\xEDvel de 'exercise'\n      sets[] {\n        reps,\n        weight,\n        weightUnit,\n        _type,\n        _key\n      }\n    },\n    _type,\n    _key\n  }\n": GetWorkoutsQueryResult;
+    '*[_type == "workout" && _id == $workoutId][0] {\n_id,\n_type,\n_createdAt,\ndate,\nduration,\nexercises[] {\n  exercise-> {\n    _id,\n    name,\n    description\n    },\n    sets[] {\n    reps,\n    weight,\n    weightUnit,\n    _type,\n    _key\n    },\n  _type,\n  _key\n  } \n}': GetWorkoutRecordQueryResult;
     '*[_type == "exercise" && _id == $id][0]': SingleExerciseQueryResult;
   }
 }
