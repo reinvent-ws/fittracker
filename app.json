@@ -3,6 +3,12 @@
     "scheme": "acme",
     "userInterfaceStyle": "automatic",
     "orientation": "default",
+    "icon": "./assets/barbell-front-squat.png",
+    "splash": {
+      "image": "./assets/barbell-front-squat.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
     "web": {
       "output": "server"
     },

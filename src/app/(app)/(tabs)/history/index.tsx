@@ -87,7 +87,7 @@ export default function HistoryPage() {
   });
 
   const formatWorkoutDuration = (seconds?: number) => {
-    if (!seconds) return "Duration not recorded";
+    if (!seconds) return "Duração não registrada!";
     return formatDuration(seconds);
   };
 
