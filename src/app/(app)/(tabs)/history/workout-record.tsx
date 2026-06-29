@@ -1,6 +1,7 @@
 import {
   ActivityIndicator,
   StyleSheet,
+  ScrollView,
   Text,
   TouchableOpacity,
   View,
@@ -9,14 +10,9 @@ import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
 import { defineQuery } from "groq";
 import { client } from "@/lib/sanity/client";
-import {
-  GetWorkoutRecordQueryResult,
-  GetWorkoutsQueryResult,
-  Workout,
-} from "@/lib/sanity/types";
+import { GetWorkoutRecordQueryResult } from "@/lib/sanity/types";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
-import { ScrollView } from "react-native-reanimated/lib/typescript/Animated";
 import { formatDuration } from "@/utils";
 
 const getWorkoutRecordQuery =
@@ -47,7 +43,7 @@ exercises[] {
 export default function WorkoutRecord() {
   const { workoutId } = useLocalSearchParams<{ workoutId: string }>();
   const [loading, setLoading] = useState<boolean>(true);
-  const [deleting, setDeleting] = useState<boolean>(false);
+  const [deleting, setDeleting] = useState<boolean>(true);
   const [workout, setWorkout] = useState<GetWorkoutRecordQueryResult | null>(
     null,
   );
@@ -61,6 +57,7 @@ export default function WorkoutRecord() {
         const result = await client.fetch(getWorkoutRecordQuery, {
           workoutId,
         });
+        console.log("Result:", result.date);
         setWorkout(result);
       } catch (error) {
         console.error("Error fetching workout:", error);
@@ -124,6 +121,14 @@ export default function WorkoutRecord() {
     return { volume: totalVolume, unit };
   };
 
+  if (loading)
+    <SafeAreaView className="flex-1 bg-gray-50">
+      <View className="flex-1 items-center justify-center">
+        <ActivityIndicator size="large" color="#3b82f6" />
+        <Text className="text-gray-600 mt-4">Carregando treino...</Text>
+      </View>
+    </SafeAreaView>;
+
   if (!workout)
     <SafeAreaView>
       <View className="flex-1 items-center justify-center">
@@ -149,17 +154,17 @@ export default function WorkoutRecord() {
     <SafeAreaView className="flex-1 bg-gray-50">
       <ScrollView className="flex-1">
         {/* Workout Summary */}
-        <View className="bg-white p-6 border-b border-gray-300">
+        <View className="bg-white px-6 border-b border-gray-300">
           <View className="flex-row items-center justify-between mb-4">
             <Text className="text-lg font-semibold Otext-gray-900">
-              Workout Summary
+              Resumo do Treino
             </Text>
             <TouchableOpacity
               // onPress={handleDeleteWorkout}
               disabled={deleting}
-              className="Dbg-red-600 px-4 py-2 rounded-lg flex-row items-center"
+              className="bg-red-600 px-4 py-2 rounded-lg flex-row items-center"
             >
-              {deleting ? (
+              {!deleting ? (
                 <ActivityIndicator size="small" color="#FFFFFF" />
               ) : (
                 <>
@@ -168,6 +173,13 @@ export default function WorkoutRecord() {
                 </>
               )}
             </TouchableOpacity>
+          </View>
+
+          <View className="flex-row items-center mb-3">
+            <Ionicons name="calendar-outline" size={20} color="#6B7280" />
+            <Text className="Otext-gray-700 ml-3 font-medium">
+              {formatDate(workout?.date)} às {formatTime(workout?.date)}
+            </Text>
           </View>
         </View>
       </ScrollView>

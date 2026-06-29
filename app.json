@@ -3,9 +3,9 @@
     "scheme": "acme",
     "userInterfaceStyle": "automatic",
     "orientation": "default",
-    "icon": "./assets/barbell-front-squat.png",
+    "icon": "./src/assets/fitness.png",
     "splash": {
-      "image": "./assets/barbell-front-squat.png",
+      "image": "./src/assets/fitness.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
@@ -22,10 +22,7 @@
       "expo-secure-store",
       "expo-web-browser"
     ],
-    "name": "fitness-app",
-    "slug": "fitness-app",
-    "android": {
-      "package": "com.anonymous.fitnessapp"
-    }
+    "name": "",
+    "slug": "fitness-app"
   }
 }

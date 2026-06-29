@@ -58,7 +58,6 @@ export default function HistoryPage() {
 
     try {
       const results = await client.fetch(getWorkoutsQuery, { userId: user.id });
-      console.log("Workouts: ", results);
       setWorkouts(results);
     } catch (error) {
       console.error("Error fetching workouts: ", error);
