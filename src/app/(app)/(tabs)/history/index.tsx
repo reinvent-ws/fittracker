@@ -108,7 +108,7 @@ export default function HistoryPage() {
     return (
       <SafeAreaView className="flex-1 bg-gray-50">
         <View className="px-6 py-4 bg-white border-b border-gray-200">
-          <Text className="text-2xl font-bold Otext-gray-900">
+          <Text className="text-2xl font-bold text-gray-200">
             Histórico de Treinos
           </Text>
         </View>
@@ -125,11 +125,11 @@ export default function HistoryPage() {
   return (
     <SafeAreaView className="flex-1 bg-gray-50">
       {/* Header */}
-      <View className="px-6 py-4 bg-white border-b">
-        <Text className="text-2xl font-bold Otext-gray-900">
+      <View className="px-6 py-4 bg-white border-b border-gray-200">
+        <Text className="text-2xl font-bold text-gray-900">
           Histórico de Treinos
         </Text>
-        <Text className="Otext-gray-600 mt-1">
+        <Text className="text-gray-600 mt-1">
           {workouts.length} treino{workouts.length !== 1 ? "s" : ""} completado
           {workouts.length !== 1 ? "s" : ""}
         </Text>
