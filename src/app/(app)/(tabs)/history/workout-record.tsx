@@ -58,7 +58,6 @@ export default function WorkoutRecord() {
         const result = await client.fetch(getWorkoutRecordQuery, {
           workoutId,
         });
-        console.log("Result:", result);
         setWorkout(result);
       } catch (error) {
         console.error("Error fetching workout:", error);
@@ -124,23 +123,40 @@ export default function WorkoutRecord() {
 
   const deleteWorkout = async () => {
     setDeleting(true);
+
+    console.log("workoutId: ", workoutId);
+
     try {
       const response = await fetch("/api/delete-workout", {
         method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ workoutId: workout._id }),
       });
 
       const result = await response.json();
 
+      // PASSO 2: Só tente transformar em JSON se o status for 200
       if (result.success) {
-        // FORÇA A ATUALIZAÇÃO:
-        // Em vez de apenas voltar, vamos limpar o cache da navegação
-        router.replace("/(tabs)/history");
+        // 1. Mostra o alerta de sucesso
+        Alert.alert(
+          "Sucesso",
+          "O registro do treino foi removido com sucesso!",
+          [
+            {
+              text: "OK",
+              onPress: () => {
+                // 2. Só navega de volta quando o usuário clicar em OK
+                router.replace("/(tabs)/history");
+              },
+            },
+          ],
+        );
       } else {
-        Alert.alert("Erro", "Não foi possível deletar.");
+        Alert.alert("Erro", "Não foi possível apagar o treino.");
       }
     } catch (e) {
       console.error(e);
+      Alert.alert("Erro", "Ocorreu um erro ao tentar conectar com o servidor.");
     } finally {
       setDeleting(false);
     }

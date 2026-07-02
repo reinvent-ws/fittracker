@@ -4,8 +4,6 @@ export async function POST(request: Request) {
   try {
     const { workoutId } = await request.json();
 
-    console.log("Id do Treino:", workoutId);
-
     if (!workoutId) {
       return Response.json(
         { success: false, error: "ID do treino não fornecido." },

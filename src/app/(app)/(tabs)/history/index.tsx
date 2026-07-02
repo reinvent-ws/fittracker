@@ -3,9 +3,9 @@ import { GetWorkoutsQueryResult, Workout } from "@/lib/sanity/types";
 import { formatDate, formatDuration } from "@/utils";
 import { useUser } from "@clerk/clerk-expo";
 import { Ionicons } from "@expo/vector-icons";
-import { useLocalSearchParams, useRouter } from "expo-router";
+import { useFocusEffect, useLocalSearchParams, useRouter } from "expo-router";
 import { defineQuery } from "groq";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import {
   ActivityIndicator,
   FlatList,
@@ -22,16 +22,13 @@ export const getWorkoutsQuery = defineQuery(`
     _id,
     date,
     duration,
-    // Acessa o array de exercícios
     exercises[] {
       _key,
       _type,
-      // Entra no objeto interno 'exercise' para buscar os dados dele
       exercise-> {
         _id,
         name
       },
-      // Busca o array 'sets' que está no mesmo nível de 'exercise'
       sets[] {
         reps,
         weight,
@@ -50,166 +47,130 @@ export default function HistoryPage() {
   const [workouts, setWorkouts] = useState<Workout[] | any>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [refreshing, setRefreshing] = useState<boolean>(false);
-  const { refresh } = useLocalSearchParams();
   const router = useRouter();
 
   const fetchWorkouts = async () => {
-    if (!user.id) return;
-
     try {
-      const results = await client.fetch(getWorkoutsQuery, { userId: user.id });
-      setWorkouts(results);
+      const result = await client.fetch(getWorkoutsQuery);
+      setWorkouts(result);
     } catch (error) {
-      console.error("Error fetching workouts: ", error);
+      console.error("Error fetching workouts:", error);
     } finally {
       setLoading(false);
       setRefreshing(false);
     }
   };
 
-  const onRefresh = async () => {
-    setRefreshing(true);
-    await fetchWorkouts();
-    setRefreshing(false);
-  };
-
-  useEffect(() => {
-    fetchWorkouts();
-  }, [user.id]);
-
-  useEffect(() => {
-    if (refresh === "true") {
+  useFocusEffect(
+    useCallback(() => {
       fetchWorkouts();
-      // Clear the refresh parameter from the URL
-      router.replace("/(app)/(tabs)/history");
-    }
-  });
+    }, []),
+  );
 
-  const formatWorkoutDuration = (seconds?: number) => {
-    if (!seconds) return "Duração não registrada!";
-    return formatDuration(seconds);
+  const onRefresh = () => {
+    setRefreshing(true);
+    fetchWorkouts();
   };
 
-  const getTotalSets = (workout: Workout) => {
+  const getExerciseNames = (workout: Workout) => {
     return (
-      workout.exercises?.reduce((total, exercise) => {
-        return total + (exercise.sets?.length || 0);
-      }, 0) || 0
-    );
-  };
-
-  const getExerciseNames = (workout: GetWorkoutsQueryResult | any) => {
-    return (
-      workout.exercises?.map((ex) => ex.exercise?.name).filter(Boolean) || []
+      workout.exercises?.map((e: any) => e.exercise?.name).filter(Boolean) || []
     );
   };
 
   if (loading) {
     return (
-      <SafeAreaView className="flex-1 bg-gray-50">
-        <View className="px-6 py-4 bg-white border-b border-gray-200">
-          <Text className="text-2xl font-bold text-gray-200">
-            Histórico de Treinos
-          </Text>
-        </View>
-        <View className="flex-1 items-center justify-center">
-          <ActivityIndicator size="large" color="#3B82F6" />
-          <Text className="Otext-gray-600 mt-4">
-            Carregando seus treinos ...
-          </Text>
-        </View>
+      <SafeAreaView className="flex-1 bg-gray-50 items-center justify-center">
+        <ActivityIndicator size="large" color="#3b82f6" />
       </SafeAreaView>
     );
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-gray-50">
-      {/* Header */}
-      <View className="px-6 py-4 bg-white border-b border-gray-200">
-        <Text className="text-2xl font-bold text-gray-900">
-          Histórico de Treinos
-        </Text>
-        <Text className="text-gray-600 mt-1">
-          {workouts.length} treino{workouts.length !== 1 ? "s" : ""} completado
-          {workouts.length !== 1 ? "s" : ""}
-        </Text>
-      </View>
-      {/* Workouts List */}
+    <SafeAreaView className="flex-1 bg-gray-50" edges={["top"]}>
       <ScrollView
-        className="flex-1"
-        contentContainerStyle={{ padding: 24 }}
+        className="flex-1 px-4"
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }
       >
+        {/* Header */}
+        <View className="py-6 border-b border-gray-200 mb-4">
+          <Text className="text-2xl font-bold text-gray-900">
+            Histórico de Treinos
+          </Text>
+          <Text className="text-gray-600 mt-1">
+            {workouts.length}{" "}
+            {workouts.length === 1
+              ? "treino completado"
+              : "treinos completados"}
+          </Text>
+        </View>
+
+        {/* Workout List */}
         {workouts.length === 0 ? (
-          <View className="bg-white rounded-2xl p-8 items-center">
-            <Ionicons name="barbell-outline" size={64} color="#9CA3AF" />
-            <Text className="text-xl font-semibold Otext-gray-900 mt-4">
-              Não há treinos disponíveis!
-            </Text>
-            <Text className="text-gray-600 text-center mt-2">
-              Seus treinos concluídos aparecerão aqui.
+          <View className="items-center justify-center py-12">
+            <Ionicons name="barbell-outline" size={48} color="#9CA3AF" />
+            <Text className="text-gray-500 mt-4 text-center">
+              Nenhum treino registrado ainda.
             </Text>
           </View>
         ) : (
-          <View className="space-y-4 gap-4">
-            {workouts.map((workout) => (
+          <View className="space-y-4 gap-4 mb-8">
+            {workouts.map((workout: any) => (
               <TouchableOpacity
                 key={workout._id}
-                className="bg-white rounded-2xl p-6 shadow-md border border-gray-100"
-                activeOpacity={0.7}
-                onPress={() => {
-                  router.push({
-                    pathname: "/history/workout-record",
-                    params: {
-                      workoutId: workout._id,
-                    },
-                  });
-                }}
+                onPress={() =>
+                  router.push(
+                    `/(tabs)/history/workout-record?workoutId=${workout._id}`,
+                  )
+                }
+                className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100 flex-col"
               >
-                {/* Workout Header */}
-                <View className="flex-row items-center justify-between mb-4">
-                  <View className="flex-1">
-                    <Text className="text-lg font-semibold text-gray-900">
-                      {formatDate(workout.date || "")}
-                    </Text>
-                    <View className="flex-row items-center mt-1">
-                      <Ionicons name="time-outline" size={16} color="#6B7280" />
-                      <Text className="Otext-gray-600 ml-2">
-                        {formatWorkoutDuration(workout.duration)}
-                      </Text>
-                    </View>
-                  </View>
-                  <View className="bg-blue-100 rounded-full w-12 h-12 items-center justify-center">
+                {/* Date & Time */}
+                <View className="flex-row items-center justify-between mb-3">
+                  <View className="flex-row items-center">
                     <Ionicons
-                      name="fitness-outline"
-                      size={24}
-                      color="#3B82F6"
+                      name="calendar-outline"
+                      size={18}
+                      color="#4B5563"
                     />
+                    <Text className="text-gray-900 font-semibold ml-2">
+                      {formatDate(workout.date)}
+                    </Text>
+                    '
+                  </View>
+                  <View className="bg-blue-50 rounded-full p-2">
+                    <Ionicons name="time-outline" size={20} color="#3b82f6" />
                   </View>
                 </View>
 
-                {/* Workout Stats */}
-                <View className="flex-row items-center justify-between mb-4">
-                  <View className="flex-row items-center">
-                    <View className="bg-gray-100 rounded-lg px-3 py-2 mr-3">
-                      <Text className="text-sm font-medium Otext-gray-700">
-                        {workout.exercises?.length || 0} exercícios
-                      </Text>
-                    </View>
-                    <View className="bg-gray-100 rounded-lg px-3 py-2">
-                      <Text className="text-sm font-medium Otext-gray-700">
-                        {getTotalSets(workout)} séries
-                      </Text>
-                    </View>
+                {/* Stats */}
+                <View className="flex-row items-center space-x-4 gap-4 mb-4">
+                  <View className="flex-row items-center bg-gray-50 rounded-lg px-3 py-1.5">
+                    <Ionicons name="time-outline" size={16} color="#6B7280" />
+                    <Text className="text-gray-700 text-sm font-medium ml-1.5">
+                      {formatDuration(workout.duration)}
+                    </Text>
+                  </View>
+
+                  <View className="flex-row items-center bg-gray-50 rounded-lg px-3 py-1.5">
+                    <Ionicons
+                      name="fitness-outline"
+                      size={16}
+                      color="#6B7280"
+                    />
+                    <Text className="text-gray-700 text-sm font-medium ml-1.5">
+                      {workout.exercises?.length || 0} exercícios
+                    </Text>
                   </View>
                 </View>
 
                 {/* Exercise List */}
                 {workout.exercises && workout.exercises.length > 0 && (
                   <View>
-                    <Text className="text-sm font-medium Otext-gray-700 mb-2">
+                    {/* CORRIGIDO: text-gray-700 */}
+                    <Text className="text-sm font-medium text-gray-700 mb-2">
                       Exercícios:
                     </Text>
                     <View className="flex-row flex-wrap">
@@ -220,14 +181,16 @@ export default function HistoryPage() {
                             key={index}
                             className="bg-blue-50 rounded-lg px-3 py-1 mr-2 mb-2"
                           >
-                            <Text className="Otext-blue-700 text-sm font-medium">
+                            {/* CORRIGIDO: text-blue-700 */}
+                            <Text className="text-blue-700 text-sm font-medium">
                               {name}
                             </Text>
                           </View>
                         ))}
                       {getExerciseNames(workout).length > 3 && (
                         <View className="bg-gray-100 rounded-lg px-3 py-1 mr-2 mb-2">
-                          <Text className="Otext-gray-600 text-sm font-medium">
+                          {/* CORRIGIDO: text-gray-600 */}
+                          <Text className="text-gray-600 text-sm font-medium">
                             +{getExerciseNames(workout).length - 3} more
                           </Text>
                         </View>
