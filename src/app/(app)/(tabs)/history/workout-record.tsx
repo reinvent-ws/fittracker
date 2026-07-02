@@ -58,7 +58,7 @@ export default function WorkoutRecord() {
         const result = await client.fetch(getWorkoutRecordQuery, {
           workoutId,
         });
-        console.log("Result:", result.date);
+        console.log("Result:", result);
         setWorkout(result);
       } catch (error) {
         console.error("Error fetching workout:", error);
@@ -111,10 +111,10 @@ export default function WorkoutRecord() {
     let unit = "lbs";
 
     workout?.exercises?.forEach((exercise) => {
-      exercise.sets.forEach((set) => {
+      exercise.sets?.forEach((set) => {
         if (set.weight && set.reps) {
           totalVolume += set.weight * set.reps;
-          unit = set.weightUnit || "libs";
+          unit = set.weightUnit || "lbs";
         }
       });
     });
@@ -123,24 +123,24 @@ export default function WorkoutRecord() {
   };
 
   const deleteWorkout = async () => {
-    if (!workoutId) return;
-
     setDeleting(true);
-
     try {
-      await fetch("/api/delete-workout", {
+      const response = await fetch("/api/delete-workout", {
         method: "POST",
-        body: JSON.stringify({ workoutId }),
+        body: JSON.stringify({ workoutId: workout._id }),
       });
 
-      router.replace("/(app)/(tabs)/history?refresh=true");
-    } catch (error) {
-      console.error("Erro ao excluir o treino:", error);
-      Alert.alert(
-        "Error",
-        "Não foi possível excluir o treino. Tente novamente.",
-        [{ text: "OK" }],
-      );
+      const result = await response.json();
+
+      if (result.success) {
+        // FORÇA A ATUALIZAÇÃO:
+        // Em vez de apenas voltar, vamos limpar o cache da navegação
+        router.replace("/(tabs)/history");
+      } else {
+        Alert.alert("Erro", "Não foi possível deletar.");
+      }
+    } catch (e) {
+      console.error(e);
     } finally {
       setDeleting(false);
     }
@@ -164,32 +164,40 @@ export default function WorkoutRecord() {
     );
   };
 
-  if (loading)
-    <SafeAreaView className="flex-1 bg-gray-50">
-      <View className="flex-1 items-center justify-center">
-        <ActivityIndicator size="large" color="#3b82f6" />
-        <Text className="text-gray-600 mt-4">Carregando treino...</Text>
-      </View>
-    </SafeAreaView>;
+  // ADICIONADO O RETURN ABAIXO
+  if (loading) {
+    return (
+      <SafeAreaView className="flex-1 bg-gray-50">
+        <View className="flex-1 items-center justify-center">
+          <ActivityIndicator size="large" color="#3b82f6" />
+          <Text className="text-gray-600 mt-4">Carregando treino...</Text>
+        </View>
+      </SafeAreaView>
+    );
+  }
 
-  if (!workout)
-    <SafeAreaView>
-      <View className="flex-1 items-center justify-center">
-        <Ionicons name="alert-circle-outline" size={64} color="#EF4444" />
-        <Text className="text-xl font-semibold Otext-gray-900 mt-4">
-          Treino não encontrado!
-        </Text>
-        <Text className="Otext-gray-600 text-center mt-2">
-          Este registro de treino não foi encontrado.
-        </Text>
-        <TouchableOpacity
-          onPress={() => router.back()}
-          className="Dbg-blue-600 px-6 py-3 rounded-lg mt-6"
-        >
-          <Text className="text-white font-medium">Voltar</Text>
-        </TouchableOpacity>
-      </View>
-    </SafeAreaView>;
+  // ADICIONADO O RETURN E CORRIGIDO AS CLASSES ABAIXO
+  if (!workout) {
+    return (
+      <SafeAreaView className="flex-1 bg-gray-50">
+        <View className="flex-1 items-center justify-center p-6">
+          <Ionicons name="alert-circle-outline" size={64} color="#EF4444" />
+          <Text className="text-xl font-semibold text-gray-900 mt-4">
+            Treino não encontrado!
+          </Text>
+          <Text className="text-gray-600 text-center mt-2">
+            Este registro de treino não foi encontrado.
+          </Text>
+          <TouchableOpacity
+            onPress={() => router.back()}
+            className="bg-blue-600 px-6 py-3 rounded-lg mt-6"
+          >
+            <Text className="text-white font-medium">Voltar</Text>
+          </TouchableOpacity>
+        </View>
+      </SafeAreaView>
+    );
+  }
 
   const { volume, unit } = getTotalVolume();
 
@@ -197,7 +205,7 @@ export default function WorkoutRecord() {
     <SafeAreaView className="flex-1 bg-gray-50">
       {/* Workout Summary */}
       <View className="bg-white p-6 border-b border-gray-300">
-        <View className="flex-row items-center justify-between">
+        <View className="flex-row items-center justify-between mb-4">
           <Text className="text-lg font-semibold text-gray-900">
             Resumo do Treino
           </Text>
@@ -219,14 +227,14 @@ export default function WorkoutRecord() {
 
         <View className="flex-row items-center mb-3">
           <Ionicons name="calendar-outline" size={20} color="#6B7280" />
-          <Text className="Otext-gray-700 ml-3 font-medium">
+          <Text className="text-gray-700 ml-3 font-medium">
             {formatDate(workout?.date)} às {formatTime(workout?.date)}
           </Text>
         </View>
 
         <View className="flex-row items-center mb-3">
           <Ionicons name="time-outline" size={20} color="#6B7280" />
-          <Text className="Otext-gray-700 ml-3 font-medium">
+          <Text className="text-gray-700 ml-3 font-medium">
             {formatWorkoutDuration(workout?.duration)}
           </Text>
         </View>
@@ -240,17 +248,16 @@ export default function WorkoutRecord() {
 
         <View className="flex-row items-center mb-3">
           <Ionicons name="bar-chart-outline" size={20} color="#6B7280" />
-          <Text className="Otext-gray-700 ml-3 font-medium">
+          <Text className="text-gray-700 ml-3 font-medium">
             {getTotalSets()} total de séries
           </Text>
         </View>
 
         {volume > 0 && (
           <View className="flex-row items-center">
-            <Ionicons name="barbell-outline" size={20} color="#687280" />
-            <Text className="Otext-gray-700 ml-3 font-medium">
-              {volume.toLocaleString()}
-              {unit} total do volume
+            <Ionicons name="barbell-outline" size={20} color="#6B7280" />
+            <Text className="text-gray-700 ml-3 font-medium">
+              {`${volume.toLocaleString()} ${unit} total do volume`}
             </Text>
           </View>
         )}
@@ -281,7 +288,7 @@ export default function WorkoutRecord() {
 
               {/* Sets */}
               <View className="space-y-2">
-                <Text className="text-sm font-medium Otext-gray-700 mb-2">
+                <Text className="text-sm font-medium text-gray-700 mb-2">
                   Séries:
                 </Text>
                 {exerciseData.sets?.map((set, setIndex) => (
@@ -291,32 +298,35 @@ export default function WorkoutRecord() {
                   >
                     <View className="flex-row items-center">
                       <View className="bg-gray-200 rounded-full w-6 h-6 items-center justify-center mr-3">
-                        <Text className="Otext-gray-700 text-xs font-medium">
+                        <Text className="text-gray-700 text-xs font-medium">
                           {setIndex + 1}
                         </Text>
                       </View>
-                      <Text className="Otext-gray-900 font-medium">
+                      <Text className="text-gray-900 font-medium">
                         {set.reps} repetições
                       </Text>
                     </View>
 
-                    {set.weight && (
+                    {set.weight ? (
                       <View className="flex-row items-center">
                         <Ionicons
                           name="barbell-outline"
                           size={16}
                           color="#6B7280"
                         />
-                        <Text className="Otext-gray-700 ml-2 font-medium">
-                          {set.weight || ""} {set.weightUnit || "lbs"}
+                        <Text className="text-gray-700 ml-2 font-medium">
+                          {set.weight} {set.weightUnit || "lbs"}
                         </Text>
                       </View>
+                    ) : (
+                      <Text className="text-gray-400 text-sm italic">
+                        Peso corporal
+                      </Text>
                     )}
                   </View>
                 ))}
               </View>
 
-              {/* Exercise Volume Summary */}
               {exerciseData.sets && exerciseData.sets.length > 0 && (
                 <View className="mt-4 pt-4 border-t border-gray-100">
                   <View className="flex-row items-center justify-between">
@@ -324,12 +334,12 @@ export default function WorkoutRecord() {
                       Volume deste exercício:
                     </Text>
                     <Text className="text-sm font-medium text-gray-900">
-                      {exerciseData.sets
+                      {`${exerciseData.sets
                         .reduce((total, set) => {
-                          return total + (set.weight || 0) * (set.reps || 0);
+                          /* prettier-ignore */
+                          return total + ((set.weight || 0) * (set.reps || 0));
                         }, 0)
-                        .toLocaleString()}{" "}
-                      {exerciseData.sets[0]?.weightUnit || "lbs"}
+                        .toLocaleString()} ${exerciseData.sets[0]?.weightUnit || "lbs"}`}
                     </Text>
                   </View>
                 </View>
