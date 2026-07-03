@@ -1,10 +1,74 @@
-import { Text } from 'react-native'
-import {SafeAreaView} from 'react-native-safe-area-context'
+import { useState } from "react";
+import { Platform, StatusBar, TouchableOpacity, View } from "react-native";
+import { Text } from "react-native";
+import { useStopwatch } from "react-timer-hook";
+import { useWorkoutStore } from "store/workout-store";
 
 export default function ActiveWorkout() {
+  const {
+    workoutExercises,
+    setWorkoutExercises,
+    resetWorkout,
+    weightUnit,
+    setWeightUnit,
+  } = useWorkoutStore();
+  const { minutes, seconds, hours, totalSeconds, reset } = useStopwatch({
+    autoStart: true,
+  });
+
+  const getWorkoutDuration = () => {
+    return `${minutes.toString().padStart(2, "0")}:${seconds
+      .toString()
+      .padStart(2, "0")}`;
+  };
+
   return (
-    <SafeAreaView className='flex-1 px-4'>
-      <Text>Active Workout</Text>
-    </SafeAreaView>
-  )
+    <View className="flex-1">
+      <StatusBar barStyle="light-content" backgroundColor="#1F2937" />
+
+      {/* Top Safe Area */}
+      <View
+        className="Obg-gray-800"
+        style={{
+          paddingTop: Platform.OS === "ios" ? 55 : StatusBar.currentHeight || 0,
+        }}
+      >
+        {/* Header */}
+        <View className="bg-gray-800 px-6 py-4">
+          <View className="flex-row items-center justify-between">
+            <View>
+              <Text className="text-white text-xl font-semibold"></Text>
+              <Text className="text-gray-300">{getWorkoutDuration()}</Text>
+            </View>
+            <View className="flex-row items-center space-x-3 gap-2">
+              {/* Weight Unit Toggle */}
+              <View className="flex-row bg-gray-700 rounded-lg p-1">
+                <TouchableOpacity
+                  onPress={() => setWeightUnit("lbs")}
+                  className={`px-3 py-1 rounded ${weightUnit === "lbs" ? "bg-blue-600" : ""}
+              `}
+                >
+                  <Text
+                    className={`text-sm font-medium ${weightUnit === "lbs" ? "text-white" : "text-gray-300"}`}
+                  >
+                    lbs
+                  </Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={() => setWeightUnit("kg")}
+                  className={`px-3 py-1 rounded ${weightUnit === "kg" ? "bg-blue-600" : ""}`}
+                >
+                  <Text
+                    className={`tekt-sm font-medium ${weightUnit === "kg" ? "text-white" : "text-gray-300"}`}
+                  >
+                    kg
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </View>
+        </View>
+      </View>
+    </View>
+  );
 }

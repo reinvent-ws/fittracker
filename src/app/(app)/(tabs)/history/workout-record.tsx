@@ -122,9 +122,8 @@ export default function WorkoutRecord() {
   };
 
   const deleteWorkout = async () => {
+    if (!workoutId) return;
     setDeleting(true);
-
-    console.log("workoutId: ", workoutId);
 
     try {
       const response = await fetch("/api/delete-workout", {
