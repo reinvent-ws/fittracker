@@ -67,6 +67,8 @@ export default function ActiveWorkout() {
     setShowExerciseSelection(true);
   };
 
+  const deleteExercise = (e) => {};
+
   return (
     <View className="flex-1">
       <StatusBar barStyle="light-content" backgroundColor="#1F2937" />
@@ -156,7 +158,37 @@ export default function ActiveWorkout() {
           {workoutExercises.map((exercise) => (
             <View key={exercise.id} className="mb-8">
               {/* Exercise Header */}
-              <View></View>
+              <TouchableOpacity
+                onPress={() =>
+                  router.push({
+                    pathname: "/exercise-detail",
+                    params: {
+                      id: exercise.sanityId,
+                    },
+                  })
+                }
+                className="bg-blue-50 rounded-2xl p-4 mb-3"
+              >
+                <View className="flex-row items-center justify-between">
+                  <View className="flex-1">
+                    <Text className="text-xl font-bold text-gray-900 mb-2">
+                      {exercise.name}
+                    </Text>
+                    <Text className="text-gray-600">
+                      {exercise.sets.length} séries .{" "}
+                      {exercise.sets.filter((set) => set.isCompleted).length}{" "}
+                      completado
+                    </Text>
+                  </View>
+                  {/* Delete Exercise Button */}
+                  <TouchableOpacity
+                    onPress={() => deleteExercise(exercise.id)}
+                    className="w-10 h-10 rounded-xl items-center justify-center bg-red-500 ml-3"
+                  >
+                    <Ionicons name="trash" size={16} color="white" />
+                  </TouchableOpacity>
+                </View>
+              </TouchableOpacity>
             </View>
           ))}
 

@@ -17,7 +17,7 @@ import { defineQuery } from "groq";
 
 //Define the query outsite the component for proper type generation
 export const exercisesQuery = defineQuery(
-  `*[_type == "exercise"] {
+  `*[_type == "exercise"] | order(name asc) {
     ...
   }`,
 );

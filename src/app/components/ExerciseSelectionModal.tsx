@@ -16,6 +16,7 @@ import { FlatList } from "react-native";
 import ExerciseCard from "./ExerciseCard";
 import { defineQuery } from "groq";
 import { client } from "@/lib/sanity/client";
+import { Exercise } from "@/lib/sanity/types";
 
 export const exercisesQuery = defineQuery(
   `*[_type == "exercise"] | order(name asc) {
@@ -39,6 +40,19 @@ export default function ExerciseSelectionModal({
   const [filteredExercises, setFilteredExercises] = useState<any[]>([]);
   const [refreshing, setRefreshing] = useState(false);
 
+  useEffect(() => {
+    if (visible) {
+      fetchExercises();
+    }
+  }, [visible]);
+
+  useEffect(() => {
+    const filtered = exercises.filter((exercise) =>
+      exercise.name.toLowerCase().includes(searchQuery.toLowerCase()),
+    );
+    setFilteredExercises(filtered);
+  }, [searchQuery, exercises]);
+
   const fetchExercises = async () => {
     try {
       const exercises = await client.fetch(exercisesQuery);
@@ -49,20 +63,16 @@ export default function ExerciseSelectionModal({
     }
   };
 
-  useEffect(() => {
-    fetchExercises();
-  }, []);
-
-  const handleExercisePress = (exercise: any) => {
-    addExerciseToWorkout(exercise);
+  const handleExercisePress = (exercise: Exercise) => {
+    // Directly add exercise to workout
+    addExerciseToWorkout({ name: exercise.name, sanityId: exercise._id });
     onClose();
   };
 
-  const handleRefresh = () => {
+  const onRefresh = async () => {
     setRefreshing(true);
-    setTimeout(() => {
-      setRefreshing(false);
-    }, 1000);
+    await fetchExercises();
+    setRefreshing(false);
   };
 
   return (
@@ -134,7 +144,7 @@ export default function ExerciseSelectionModal({
           refreshControl={
             <RefreshControl
               refreshing={refreshing}
-              onRefresh={handleRefresh}
+              onRefresh={onRefresh}
               colors={["#3b82f6"]} // Android color for refresh control
               tintColor="#3b82f6" // iOS color for refresh control
             />
