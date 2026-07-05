@@ -174,7 +174,7 @@ export default function ActiveWorkout() {
                 style={{ marginRight: 8 }}
               />
               <Text className="text-white font-semibold text-lg">
-                Add Exercise
+                Adicionar Exercício
               </Text>
             </View>
           </TouchableOpacity>

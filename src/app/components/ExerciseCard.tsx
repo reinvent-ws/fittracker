@@ -56,10 +56,7 @@ export default function ExerciseCard({
             </View>
           </>
         ) : (
-          <View
-            className="w-full h-full bg-gradient-to-br from-blue-400
-Oto-purple-500 items-center justify-center"
-          >
+          <View className="w-full h-full bg-gradient-to-br from-blue-400 to-purple-500 items-center justify-center">
             <Ionicons name="fitness" size={24} color="white" />
           </View>
         )}

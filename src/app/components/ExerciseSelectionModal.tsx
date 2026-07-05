@@ -7,13 +7,21 @@ import {
   TextInput,
   RefreshControl,
 } from "react-native";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useRouter } from "expo-router";
 import { useWorkoutStore } from "store/workout-store";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import { FlatList } from "react-native";
 import ExerciseCard from "./ExerciseCard";
+import { defineQuery } from "groq";
+import { client } from "@/lib/sanity/client";
+
+export const exercisesQuery = defineQuery(
+  `*[_type == "exercise"] | order(name asc) {
+    ...
+  }`,
+);
 
 interface ModalProps {
   visible: boolean;
@@ -30,6 +38,20 @@ export default function ExerciseSelectionModal({
   const [searchQuery, setSearchQuery] = useState("");
   const [filteredExercises, setFilteredExercises] = useState<any[]>([]);
   const [refreshing, setRefreshing] = useState(false);
+
+  const fetchExercises = async () => {
+    try {
+      const exercises = await client.fetch(exercisesQuery);
+      setExercises(exercises);
+      setFilteredExercises(exercises);
+    } catch (error) {
+      console.log("Error fetching exercises: ", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchExercises();
+  }, []);
 
   const handleExercisePress = (exercise: any) => {
     addExerciseToWorkout(exercise);
@@ -120,13 +142,15 @@ export default function ExerciseSelectionModal({
           ListEmptyComponent={
             <View className="flex-1 items-center justify-center py-20">
               <Ionicons name="fitness-outline" size={64} color="#D1D5DB" />
-              <Text className="text-lg font-semibold text-gray-400 mt-4">
-                {searchQuery ? "No exercises found" : "Loading exercises ... "}
-              </Text>
-              <Text className="text-sm text-gray-400 mt-2">
+              <Text className="text-lg font-semibold text-gray-500 mt-4">
                 {searchQuery
-                  ? "Try adjusting your search"
-                  : "Please wait a moment"}
+                  ? "Nenhum exercício encontrado."
+                  : "Carregando exercícios..."}
+              </Text>
+              <Text className="text-sm text-gray-600 mt-2">
+                {searchQuery
+                  ? "Tente ajustar sua pesquisa ou atualize a lista."
+                  : "Aguarde um momento."}
               </Text>
             </View>
           }
