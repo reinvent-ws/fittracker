@@ -68,6 +68,7 @@ export default function ActiveWorkout() {
   };
 
   const deleteExercise = (e) => {};
+  const addNewSet = (e) => {};
 
   return (
     <View className="flex-1">
@@ -189,6 +190,61 @@ export default function ActiveWorkout() {
                   </TouchableOpacity>
                 </View>
               </TouchableOpacity>
+
+              {/* Exercise Sets */}
+              <View className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100 mb-3">
+                <Text className="text-lg font-semibold Otext-gray-900 mb-3">
+                  Séries
+                </Text>
+                {exercise.sets.length === 0 ? (
+                  <Text className="text-gray-500 text-center py-4">
+                    Ainda não há séries. Adicione seu primeiro série abaixo.
+                  </Text>
+                ) : (
+                  exercise.sets.map((set, setIndex) => (
+                    <View
+                      key={set.id}
+                      className={`py-3 px-3 mb-2 rounded-lg border ${
+                        set.isCompleted
+                          ? "bg-green-100 border-gray-200"
+                          : "bg-gray-50 border-green-300"
+                      }`}
+                    >
+                      {/* First Row: Set number, Reps, Weight, Complete button, Delete button */}
+                      <View className="flex-row items-center justify-between">
+                        <Text className="Otext-gray-700 font-medium w-8">
+                          {setIndex + 1}
+                        </Text>
+                      </View>
+                      <View className="flex-row items-center justify-between">
+                        <Text className="text-gray-700">
+                          Série {setIndex + 1}
+                        </Text>
+
+                        {/* Reps input */}
+                      </View>
+                    </View>
+                  ))
+                )}
+
+                {/* Add New Set Button */}
+                <TouchableOpacity
+                  onPress={() => addNewSet(exercise.id)}
+                  className="bg-blue-100 border-2 border-dashed border-blue-300 rounded-lg py-3 items-center mt-2"
+                >
+                  <View className="flex-row items-center">
+                    <Ionicons
+                      name="add"
+                      size={16}
+                      color="#3B82F6"
+                      style={{ marginRight: 6 }}
+                    />
+                    <Text className="text-blue-600 font-medium">
+                      Adicione série
+                    </Text>
+                  </View>
+                </TouchableOpacity>
+              </View>
             </View>
           ))}
 
