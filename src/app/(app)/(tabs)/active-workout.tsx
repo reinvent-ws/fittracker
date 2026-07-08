@@ -13,7 +13,7 @@ import {
 } from "react-native";
 import { Text } from "react-native";
 import { useStopwatch } from "react-timer-hook";
-import { useWorkoutStore } from "store/workout-store";
+import { useWorkoutStore, WorkoutSet } from "store/workout-store";
 
 export default function ActiveWorkout() {
   const {
@@ -67,8 +67,25 @@ export default function ActiveWorkout() {
     setShowExerciseSelection(true);
   };
 
-  const deleteExercise = (e) => {};
-  const addNewSet = (e) => {};
+  const deleteExercise = (id: string) => {};
+
+  const addNewSet = (exerciseId: string) => {
+    const newSet: WorkoutSet = {
+      id: Math.random().toString(),
+      reps: "",
+      weight: "",
+      weightUnit: weightUnit,
+      isCompleted: false,
+    };
+
+    setWorkoutExercises((exercises) =>
+      exercises.map((exercise) =>
+        exercise.id === exerciseId
+          ? { ...exercise, sets: [...exercise.sets, newSet] }
+          : exercise,
+      ),
+    );
+  };
 
   return (
     <View className="flex-1">
@@ -176,7 +193,7 @@ export default function ActiveWorkout() {
                       {exercise.name}
                     </Text>
                     <Text className="text-gray-600">
-                      {exercise.sets.length} séries .{" "}
+                      {exercise.sets.length} séries •{" "}
                       {exercise.sets.filter((set) => set.isCompleted).length}{" "}
                       completado
                     </Text>
