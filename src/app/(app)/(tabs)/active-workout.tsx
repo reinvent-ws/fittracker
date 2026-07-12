@@ -10,6 +10,7 @@ import {
   TouchableOpacity,
   ScrollView,
   View,
+  TextInput,
 } from "react-native";
 import { Text } from "react-native";
 import { useStopwatch } from "react-timer-hook";
@@ -82,6 +83,26 @@ export default function ActiveWorkout() {
       exercises.map((exercise) =>
         exercise.id === exerciseId
           ? { ...exercise, sets: [...exercise.sets, newSet] }
+          : exercise,
+      ),
+    );
+  };
+
+  const updateSet = (
+    exerciseId: string,
+    setId: string,
+    field: "reps" | "weight",
+    value: string,
+  ) => {
+    setWorkoutExercises((exercises) =>
+      exercises.map((exercise) =>
+        exercise.id === exerciseId
+          ? {
+              ...exercise,
+              sets: exercise.sets.map((set) =>
+                set.id === setId ? { ...set, [field]: value } : set,
+              ),
+            }
           : exercise,
       ),
     );
@@ -239,6 +260,26 @@ export default function ActiveWorkout() {
                         </Text>
 
                         {/* Reps input */}
+
+                        <View className="flex-1 mx-2">
+                          <Text className="text-xs Itext-gray-500 mb-1">
+                            Reps
+                          </Text>
+                          <TextInput
+                            value={set.reps}
+                            onChangeText={(value) =>
+                              updateSet(exercise.id, set.id, "reps", value)
+                            }
+                            placeholder="0"
+                            keyboardType="numeric"
+                            className={`border rounded-lg px-3 py-2 text-center ${
+                              set.isCompleted
+                                ? "bg-gray-100 border-gray-300 text-gray-500"
+                                : "bg-white border-gray300"
+                            }`}
+                            editable={!set.isCompleted}
+                          />
+                        </View>
                       </View>
                     </View>
                   ))
