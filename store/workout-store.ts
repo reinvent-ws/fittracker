@@ -24,7 +24,10 @@ interface WorkoutStore {
   weightUnit: "kg" | "lbs";
 
   // These are the actions that can be performed on the state
-  addExerciseToWorkout: (exercise: { sanityId: string; name: string }) => void;
+  addExerciseToWorkout: (exercise: {
+    sanityId: string;
+    name: string | any;
+  }) => void;
   setWorkoutExercises: (
     exercises:
       | WorkoutExercise[]

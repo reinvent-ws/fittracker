@@ -79,8 +79,8 @@ export default function ActiveWorkout() {
       isCompleted: false,
     };
 
-    setWorkoutExercises((exercises) =>
-      exercises.map((exercise) =>
+    setWorkoutExercises((exercises: any) =>
+      exercises.map((exercise: any) =>
         exercise.id === exerciseId
           ? { ...exercise, sets: [...exercise.sets, newSet] }
           : exercise,
@@ -94,12 +94,12 @@ export default function ActiveWorkout() {
     field: "reps" | "weight",
     value: string,
   ) => {
-    setWorkoutExercises((exercises) =>
-      exercises.map((exercise) =>
+    setWorkoutExercises((exercises: any) =>
+      exercises.map((exercise: any) =>
         exercise.id === exerciseId
           ? {
               ...exercise,
-              sets: exercise.sets.map((set) =>
+              sets: exercise.sets.map((set: any) =>
                 set.id === setId ? { ...set, [field]: value } : set,
               ),
             }
@@ -249,12 +249,8 @@ export default function ActiveWorkout() {
                       }`}
                     >
                       {/* First Row: Set number, Reps, Weight, Complete button, Delete button */}
-                      <View className="flex-row items-center justify-between">
-                        <Text className="Otext-gray-700 font-medium w-8">
-                          {setIndex + 1}
-                        </Text>
-                      </View>
-                      <View className="flex-row items-center justify-between">
+                      <View className="flex-row items-center justify-between"></View>
+                      <View className="flex-row items-center justify-between gap-2">
                         <Text className="text-gray-700">
                           Série {setIndex + 1}
                         </Text>
@@ -263,7 +259,7 @@ export default function ActiveWorkout() {
 
                         <View className="flex-1 mx-2">
                           <Text className="text-xs Itext-gray-500 mb-1">
-                            Reps
+                            Repetidos
                           </Text>
                           <TextInput
                             value={set.reps}
@@ -274,8 +270,29 @@ export default function ActiveWorkout() {
                             keyboardType="numeric"
                             className={`border rounded-lg px-3 py-2 text-center ${
                               set.isCompleted
-                                ? "bg-gray-100 border-gray-300 text-gray-500"
-                                : "bg-white border-gray300"
+                                ? "bg-gray-100 border-gray-300 text-gray-50"
+                                : "bg-white border-gray-300"
+                            }`}
+                            editable={!set.isCompleted}
+                          />
+                        </View>
+
+                        {/* Weight Input */}
+                        <View className="flex-1 mx-2">
+                          <Text className="text-xs text-gray-500 mb-1">
+                            Peso ({weightUnit})
+                          </Text>
+                          <TextInput
+                            value={set.weight}
+                            onChangeText={(value) =>
+                              updateSet(exercise.id, set.id, "weight", value)
+                            }
+                            placeholder="0"
+                            keyboardType="numeric"
+                            className={`border rounded-lg px-3 py-2 text-center ${
+                              set.isCompleted
+                                ? "bg-gray-100 border-gray-300 text-gray-50"
+                                : "bg-white border-gray-300"
                             }`}
                             editable={!set.isCompleted}
                           />
