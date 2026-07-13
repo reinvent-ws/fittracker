@@ -108,6 +108,23 @@ export default function ActiveWorkout() {
     );
   };
 
+  const toggleSetCompletion = (exerciseId: string, setId: string) => {
+    setWorkoutExercises((exercises) =>
+      exercises.map((exercise) =>
+        exercise.id === exerciseId
+          ? {
+              ...exercise,
+              sets: exercise.sets.map((set) =>
+                set.id === setId
+                  ? { ...set, isCompleted: !set.isCompleted }
+                  : set,
+              ),
+            }
+          : exercise,
+      ),
+    );
+  };
+
   return (
     <View className="flex-1">
       <StatusBar barStyle="light-content" backgroundColor="#1F2937" />
@@ -168,7 +185,7 @@ export default function ActiveWorkout() {
       <View className="bg-transparent">
         {/* Workout Progress */}
         <View className="px-6 mt-4">
-          <Text className="text-center text-gray-600 mb-2">
+          <Text className="text-right text-gray-600 mb-2">
             {workoutExercises.length}
             {workoutExercises.length <= 1 ? " exercício" : " exercícios"}
           </Text>
@@ -206,14 +223,14 @@ export default function ActiveWorkout() {
                     },
                   })
                 }
-                className="bg-blue-50 rounded-2xl p-4 mb-3"
+                className="bg-gray-400 rounded-tl-2xl rounded-tr-2xl p-4"
               >
                 <View className="flex-row items-center justify-between">
                   <View className="flex-1">
-                    <Text className="text-xl font-bold text-gray-900 mb-2">
+                    <Text className="text-xl font-bold text-white mb-2">
                       {exercise.name}
                     </Text>
-                    <Text className="text-gray-600">
+                    <Text className="text-white">
                       {exercise.sets.length} séries •{" "}
                       {exercise.sets.filter((set) => set.isCompleted).length}{" "}
                       completado
@@ -230,7 +247,7 @@ export default function ActiveWorkout() {
               </TouchableOpacity>
 
               {/* Exercise Sets */}
-              <View className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100 mb-3">
+              <View className="bg-white rounded-bl-2xl rounded-br-2xl p-4 shadow-sm border border-gray-100 mb-3">
                 <Text className="text-lg font-semibold Otext-gray-900 mb-3">
                   Séries
                 </Text>
@@ -270,7 +287,7 @@ export default function ActiveWorkout() {
                             keyboardType="numeric"
                             className={`border rounded-lg px-3 py-2 text-center ${
                               set.isCompleted
-                                ? "bg-gray-100 border-gray-300 text-gray-50"
+                                ? "bg-gray-100 border-gray-300 text-gray-300"
                                 : "bg-white border-gray-300"
                             }`}
                             editable={!set.isCompleted}
@@ -291,12 +308,30 @@ export default function ActiveWorkout() {
                             keyboardType="numeric"
                             className={`border rounded-lg px-3 py-2 text-center ${
                               set.isCompleted
-                                ? "bg-gray-100 border-gray-300 text-gray-50"
+                                ? "bg-gray-100 border-gray-300 text-gray-300"
                                 : "bg-white border-gray-300"
                             }`}
                             editable={!set.isCompleted}
                           />
                         </View>
+
+                        {/* Complete Button */}
+                        <TouchableOpacity
+                          onPress={() =>
+                            toggleSetCompletion(exercise.id, set.id)
+                          }
+                          className={`w-12 h-12 rounded-xl items-center justify-center mx-1 ${set.isCompleted ? "bg-green-500" : "bg-gray-200"}`}
+                        >
+                          <Ionicons
+                            name={
+                              set.isCompleted
+                                ? "checkmark"
+                                : "checkmark-outline"
+                            }
+                            size={20}
+                            color={set.isCompleted ? "white" : "#9CA3AF"}
+                          />
+                        </TouchableOpacity>
                       </View>
                     </View>
                   ))
