@@ -11,6 +11,7 @@ import {
   ScrollView,
   View,
   TextInput,
+  ActivityIndicator,
 } from "react-native";
 import { Text } from "react-native";
 import { useStopwatch } from "react-timer-hook";
@@ -30,6 +31,7 @@ export default function ActiveWorkout() {
   });
   const [showExerciseSelection, setShowExerciseSelection] =
     useState<boolean>(false);
+  const [isSaving, setIsSaving] = useState<boolean>(false);
 
   // Reset timer when screen is focused and no active workout (fresh start)
   useFocusEffect(
@@ -142,6 +144,8 @@ export default function ActiveWorkout() {
     );
   };
 
+  const saveWorkout = () => {};
+
   return (
     <View className="flex-1">
       <StatusBar barStyle="light-content" backgroundColor="#1F2937" />
@@ -213,7 +217,7 @@ export default function ActiveWorkout() {
       {workoutExercises.length === 0 && (
         <View className="bg-gray-50 rounded-2xl p-8 items-center mx-6">
           <Ionicons name="barbell-outline" size={48} color="#9CA3AF" />
-          <Text className="text-gray-600 text-lg text-center mt-4font-medium">
+          <Text className="text-gray-600 text-lg text-center mt-4 font-medium">
             Ainda não há exercícios.
           </Text>
           <Text className="text-gray-500 text-center mt-2">
@@ -227,9 +231,9 @@ export default function ActiveWorkout() {
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         className="flex-1"
       >
-        <ScrollView className="flex-1 px-6 mt-4">
+        <ScrollView className="flex-1 px-6 mt-2">
           {workoutExercises.map((exercise) => (
-            <View key={exercise.id} className="mb-8">
+            <View key={exercise.id} className="mb-4">
               {/* Exercise Header */}
               <TouchableOpacity
                 onPress={() =>
@@ -240,7 +244,7 @@ export default function ActiveWorkout() {
                     },
                   })
                 }
-                className="bg-gray-200 rounded-tl-2xl rounded-tr-2xl p-4"
+                className="bg-white rounded-tl-2xl rounded-tr-2xl p-4 border border-transparent border-b-gray-100 z-100"
               >
                 <View className="flex-row items-center justify-between">
                   <View className="flex-1">
@@ -288,6 +292,7 @@ export default function ActiveWorkout() {
                         <Text className="text-gray-700">
                           Série {setIndex + 1}
                         </Text>
+
                         {/* Reps input */}
                         <View className="flex-1 mx-2">
                           <Text className="text-xs Itext-gray-500 mb-1">
@@ -382,7 +387,7 @@ export default function ActiveWorkout() {
           {/* Add Exercise Button */}
           <TouchableOpacity
             onPress={addExercise}
-            className="bg-blue-600 rounded-2xl py-4 items-center mb-8 first-line:active:bg-blue-700"
+            className="bg-blue-600 rounded-2xl py-4 items-center mt-12 mb-4 first-line:active:bg-blue-700"
             activeOpacity={0.8}
           >
             <View className="flex-row items-center">
@@ -396,6 +401,40 @@ export default function ActiveWorkout() {
                 Adicionar Exercício
               </Text>
             </View>
+          </TouchableOpacity>
+
+          {/* Complete Workout Button */}
+          <TouchableOpacity
+            onPress={saveWorkout}
+            className={`rounded-2xl py-4 items-center mb-8 ${
+              isSaving ||
+              workoutExercises.length === 0 ||
+              workoutExercises.some((exercise) =>
+                exercise.sets.some((set) => !set.isCompleted),
+              )
+                ? "bg-gray-400"
+                : "bg-green-600 active:bg-green-700"
+            }`}
+            disabled={
+              isSaving ||
+              workoutExercises.length === 0 ||
+              workoutExercises.some((exercise) =>
+                exercise.sets.some((set) => !set.isCompleted),
+              )
+            }
+          >
+            {isSaving ? (
+              <View className="flex-row items-center">
+                <ActivityIndicator size="small" color="white" />
+                <Text className="text-white font-semibold text-lg ml-2">
+                  Salvando...
+                </Text>
+              </View>
+            ) : (
+              <Text className="text-white font-semibold text-lg">
+                Treino completo
+              </Text>
+            )}
           </TouchableOpacity>
         </ScrollView>
       </KeyboardAvoidingView>
