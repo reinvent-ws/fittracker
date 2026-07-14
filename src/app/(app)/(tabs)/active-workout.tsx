@@ -68,7 +68,11 @@ export default function ActiveWorkout() {
     setShowExerciseSelection(true);
   };
 
-  const deleteExercise = (id: string) => {};
+  const deleteExercise = (exerciseId: string) => {
+    setWorkoutExercises((exercises) =>
+      exercises.filter((exercise) => exercise.id !== exerciseId),
+    );
+  };
 
   const addNewSet = (exerciseId: string) => {
     const newSet: WorkoutSet = {
@@ -102,6 +106,19 @@ export default function ActiveWorkout() {
               sets: exercise.sets.map((set: any) =>
                 set.id === setId ? { ...set, [field]: value } : set,
               ),
+            }
+          : exercise,
+      ),
+    );
+  };
+
+  const deleteSet = (exerciseId: string, setId: string) => {
+    setWorkoutExercises((exercises) =>
+      exercises.map((exercise) =>
+        exercise.id === exerciseId
+          ? {
+              ...exercise,
+              sets: exercise.sets.filter((set) => set.id !== setId),
             }
           : exercise,
       ),
@@ -196,10 +213,10 @@ export default function ActiveWorkout() {
       {workoutExercises.length === 0 && (
         <View className="bg-gray-50 rounded-2xl p-8 items-center mx-6">
           <Ionicons name="barbell-outline" size={48} color="#9CA3AF" />
-          <Text className="Otext-gray-600 text-lg text-center mt-4font-medium">
+          <Text className="text-gray-600 text-lg text-center mt-4font-medium">
             Ainda não há exercícios.
           </Text>
-          <Text className="Otext-gray-500 text-center mt-2">
+          <Text className="text-gray-500 text-center mt-2">
             Comece adicionando seu primeiro exercício abaixo.
           </Text>
         </View>
@@ -223,14 +240,14 @@ export default function ActiveWorkout() {
                     },
                   })
                 }
-                className="bg-gray-400 rounded-tl-2xl rounded-tr-2xl p-4"
+                className="bg-gray-200 rounded-tl-2xl rounded-tr-2xl p-4"
               >
                 <View className="flex-row items-center justify-between">
                   <View className="flex-1">
-                    <Text className="text-xl font-bold text-white mb-2">
+                    <Text className="text-xl font-bold text-gray-600 mb-2">
                       {exercise.name}
                     </Text>
-                    <Text className="text-white">
+                    <Text className="text-gray-600">
                       {exercise.sets.length} séries •{" "}
                       {exercise.sets.filter((set) => set.isCompleted).length}{" "}
                       completado
@@ -261,8 +278,8 @@ export default function ActiveWorkout() {
                       key={set.id}
                       className={`py-3 px-3 mb-2 rounded-lg border ${
                         set.isCompleted
-                          ? "bg-green-100 border-gray-200"
-                          : "bg-gray-50 border-green-300"
+                          ? "bg-green-100 border-green-300"
+                          : "bg-gray-50 border-gray-200"
                       }`}
                     >
                       {/* First Row: Set number, Reps, Weight, Complete button, Delete button */}
@@ -271,9 +288,7 @@ export default function ActiveWorkout() {
                         <Text className="text-gray-700">
                           Série {setIndex + 1}
                         </Text>
-
                         {/* Reps input */}
-
                         <View className="flex-1 mx-2">
                           <Text className="text-xs Itext-gray-500 mb-1">
                             Repetidos
@@ -285,7 +300,7 @@ export default function ActiveWorkout() {
                             }
                             placeholder="0"
                             keyboardType="numeric"
-                            className={`border rounded-lg px-3 py-2 text-center ${
+                            className={`border rounded-lg px-3 py-px text-center ${
                               set.isCompleted
                                 ? "bg-gray-100 border-gray-300 text-gray-300"
                                 : "bg-white border-gray-300"
@@ -293,7 +308,6 @@ export default function ActiveWorkout() {
                             editable={!set.isCompleted}
                           />
                         </View>
-
                         {/* Weight Input */}
                         <View className="flex-1 mx-2">
                           <Text className="text-xs text-gray-500 mb-1">
@@ -306,7 +320,7 @@ export default function ActiveWorkout() {
                             }
                             placeholder="0"
                             keyboardType="numeric"
-                            className={`border rounded-lg px-3 py-2 text-center ${
+                            className={`border rounded-lg px-3 py-px text-center ${
                               set.isCompleted
                                 ? "bg-gray-100 border-gray-300 text-gray-300"
                                 : "bg-white border-gray-300"
@@ -314,7 +328,6 @@ export default function ActiveWorkout() {
                             editable={!set.isCompleted}
                           />
                         </View>
-
                         {/* Complete Button */}
                         <TouchableOpacity
                           onPress={() =>
@@ -331,6 +344,14 @@ export default function ActiveWorkout() {
                             size={20}
                             color={set.isCompleted ? "white" : "#9CA3AF"}
                           />
+                        </TouchableOpacity>
+
+                        {/* Delete Button */}
+                        <TouchableOpacity
+                          onPress={() => deleteSet(exercise.id, set.id)}
+                          className="w-12 h-12 rounded-xl items-center justify-center bg-red-500 ml-1"
+                        >
+                          <Ionicons name="trash" size={16} color="white" />
                         </TouchableOpacity>
                       </View>
                     </View>
