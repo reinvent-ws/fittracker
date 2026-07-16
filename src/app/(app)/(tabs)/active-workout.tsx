@@ -49,6 +49,52 @@ export default function ActiveWorkout() {
       .padStart(2, "0")}`;
   };
 
+  const saveWorkoutToDatabase = async () => {
+    //Check if already saving ot prevent multiple attempts
+    if (isSaving) return false;
+
+    setIsSaving(true);
+
+    try {
+    } catch (error) {
+      console.error("Erro ao salva o treino:", error);
+      Alert.alert(
+        "Falhou ao salvar",
+        "Falha ao salvar o treino. Tente novamente.",
+      );
+    }
+  };
+
+  const endWorkout = async () => {
+    const saved = await saveWorkoutToDatabase();
+
+    if (saved) {
+      Alert.alert("Treino Salvo", "Your workout has been saved successfully!");
+      //Reset the workout
+      resetWorkout();
+
+      router.replace("/(app)/(tabs)/history?refresh=true");
+    }
+  };
+
+  const saveWorkout = () => {
+    //are you sure you want to complete the workout?
+    Alert.alert(
+      "Concluir o treino",
+      "Tem certeza de que deseja concluir o treino?",
+      [
+        {
+          text: "Cancelar",
+          style: "cancel",
+        },
+        {
+          text: "Concluir",
+          onPress: async () => await endWorkout(),
+        },
+      ],
+    );
+  };
+
   const cancelWorkout = () => {
     Alert.alert(
       "Cancelar o treino",
@@ -143,8 +189,6 @@ export default function ActiveWorkout() {
       ),
     );
   };
-
-  const saveWorkout = () => {};
 
   return (
     <View className="flex-1">
@@ -407,7 +451,7 @@ export default function ActiveWorkout() {
           <TouchableOpacity
             onPress={saveWorkout}
             className={`rounded-2xl py-4 items-center mb-8 ${
-              isSaving ||
+              !isSaving ||
               workoutExercises.length === 0 ||
               workoutExercises.some((exercise) =>
                 exercise.sets.some((set) => !set.isCompleted),
