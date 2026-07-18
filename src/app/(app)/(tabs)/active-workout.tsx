@@ -16,6 +16,16 @@ import {
 import { Text } from "react-native";
 import { useStopwatch } from "react-timer-hook";
 import { useWorkoutStore, WorkoutSet } from "store/workout-store";
+import { client } from "@/lib/sanity/client";
+import { defineQuery } from "groq";
+
+// Query to find exercise by name
+const findExerciseQuery = defineQuery(
+  `*[_type == "exercise" && name == $name][0] {
+  _id,
+  name
+  }`,
+);
 
 export default function ActiveWorkout() {
   const {
@@ -50,18 +60,61 @@ export default function ActiveWorkout() {
   };
 
   const saveWorkoutToDatabase = async () => {
-    //Check if already saving ot prevent multiple attempts
+    // Check if already saving ot prevent multiple attempts
     if (isSaving) return false;
 
     setIsSaving(true);
 
     try {
+      // Implement saving...
+      // Use stopwath total seconds for duration
+      const durationInSeconds = totalSeconds;
+
+      // Transform exercises data to match Sanity schema
+      const exercisesForSanity = await Promise.all(
+        workoutExercises.map(async (exercise) => {
+          // Find the exercise document in Sanity by name
+          const exerciseDoc = await client.fetch(findExerciseQuery, {
+            name: exercise.name,
+          });
+
+          if (!exerciseDoc) {
+            throw new Error(
+              `Exercício "${exercise.name}" não encontrado no banco de dados.`,
+            );
+          }
+
+          // Transform sets to match schema (only completed sets, convert to numbers)
+          const setsForSanity = exercise.sets
+            .filter((set) => set.isCompleted && set.reps && set.weight)
+            .map((set) => ({
+              _type: "set",
+              _key: Math.random().toString(36).substr(2, 9),
+              reps: parseInt(set.reps, 10) || 0,
+              weight: parseFloat(set.weight) || 0,
+              weightUnit: set.weightUnit,
+            }));
+
+          return {
+            _type: "workoutExercise",
+            _key: Math.random().toString(36).substr(2, 9),
+            exercise: {
+              _type: "reference",
+              _ref: exerciseDoc._id,
+            },
+            sets: setsForSanity,
+          };
+        }),
+      );
     } catch (error) {
-      console.error("Erro ao salva o treino:", error);
+      console.error("Erro ao salvar o treino:", error);
       Alert.alert(
         "Falhou ao salvar",
         "Falha ao salvar o treino. Tente novamente.",
       );
+      return false;
+    } finally {
+      setIsSaving(false);
     }
   };
 
@@ -69,7 +122,7 @@ export default function ActiveWorkout() {
     const saved = await saveWorkoutToDatabase();
 
     if (saved) {
-      Alert.alert("Treino Salvo", "Your workout has been saved successfully!");
+      Alert.alert("Treino Salvo", "Seu treino foi salvo com sucesso!");
       //Reset the workout
       resetWorkout();
 
@@ -451,7 +504,7 @@ export default function ActiveWorkout() {
           <TouchableOpacity
             onPress={saveWorkout}
             className={`rounded-2xl py-4 items-center mb-8 ${
-              !isSaving ||
+              isSaving ||
               workoutExercises.length === 0 ||
               workoutExercises.some((exercise) =>
                 exercise.sets.some((set) => !set.isCompleted),

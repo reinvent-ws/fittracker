@@ -18,7 +18,7 @@ import { defineQuery } from "groq";
 import { client } from "@/lib/sanity/client";
 import { Exercise } from "@/lib/sanity/types";
 
-export const exercisesQuery = defineQuery(
+export const exerciseListQuery = defineQuery(
   `*[_type == "exercise"] | order(name asc) {
     ...
   }`,
@@ -55,7 +55,7 @@ export default function ExerciseSelectionModal({
 
   const fetchExercises = async () => {
     try {
-      const exercises = await client.fetch(exercisesQuery);
+      const exercises = await client.fetch(exerciseListQuery);
       setExercises(exercises);
       setFilteredExercises(exercises);
     } catch (error) {

@@ -209,9 +209,17 @@ export type AllSanitySchemaTypes =
   | Geopoint
   | Slug;
 
+// Source: ../src/app/(app)/(tabs)/active-workout.tsx
+// Variable: findExerciseQuery
+// Query: *[_type == "exercise" && name == $name][0] {  _id,  name  }
+export type FindExerciseQueryResult = {
+  _id: string;
+  name: string | null;
+} | null;
+
 // Source: ../src/app/(app)/(tabs)/exercices.tsx
 // Variable: exercisesQuery
-// Query: *[_type == "exercise"] {    ...  }
+// Query: *[_type == "exercise"] | order(name asc) {    ...  }
 export type ExercisesQueryResult = Array<{
   _id: string;
   _type: "exercise";
@@ -234,7 +242,7 @@ export type ExercisesQueryResult = Array<{
 
 // Source: ../src/app/(app)/(tabs)/history/index.tsx
 // Variable: getWorkoutsQuery
-// Query: *[_type == "workout"] | order(date desc) {    _id,    date,    duration,    // Acessa o array de exercícios    exercises[] {      _key,      _type,      // Entra no objeto interno 'exercise' para buscar os dados dele      exercise-> {        _id,        name      },      // Busca o array 'sets' que está no mesmo nível de 'exercise'      sets[] {        reps,        weight,        weightUnit,        _type,        _key      }    },    _type,    _key  }
+// Query: *[_type == "workout"] | order(date desc) {    _id,    date,    duration,    exercises[] {      _key,      _type,      exercise-> {        _id,        name      },      sets[] {        reps,        weight,        weightUnit,        _type,        _key      }    },    _type,    _key  }
 export type GetWorkoutsQueryResult = Array<{
   _id: string;
   date: string | null;
@@ -308,12 +316,38 @@ export type SingleExerciseQueryResult = {
   isActive?: boolean;
 } | null;
 
+// Source: ../src/app/components/ExerciseSelectionModal.tsx
+// Variable: exerciseListQuery
+// Query: *[_type == "exercise"] | order(name asc) {    ...  }
+export type ExerciseListQueryResult = Array<{
+  _id: string;
+  _type: "exercise";
+  _createdAt: string;
+  _updatedAt: string;
+  _rev: string;
+  name?: string;
+  description?: string;
+  difficulty?: "advanced" | "beginner" | "intermediate";
+  imageUrl?: {
+    asset?: SanityImageAssetReference;
+    media?: unknown;
+    hotspot?: SanityImageHotspot;
+    crop?: SanityImageCrop;
+    _type: "image";
+  };
+  videoUrl?: string;
+  isActive?: boolean;
+}>;
+
 // Query TypeMap
 import "@sanity/client";
 declare module "@sanity/client" {
   interface SanityQueries {
-    '*[_type == "exercise"] {\n    ...\n  }': ExercisesQueryResult;
-    "\n  *[_type == \"workout\"] | order(date desc) {\n    _id,\n    date,\n    duration,\n    // Acessa o array de exerc\xEDcios\n    exercises[] {\n      _key,\n      _type,\n      // Entra no objeto interno 'exercise' para buscar os dados dele\n      exercise-> {\n        _id,\n        name\n      },\n      // Busca o array 'sets' que est\xE1 no mesmo n\xEDvel de 'exercise'\n      sets[] {\n        reps,\n        weight,\n        weightUnit,\n        _type,\n        _key\n      }\n    },\n    _type,\n    _key\n  }\n": GetWorkoutsQueryResult;
+    '*[_type == "exercise" && name == $name][0] {\n  _id,\n  name\n  }': FindExerciseQueryResult;
+    '*[_type == "exercise"] | order(name asc) {\n    ...\n  }':
+      | ExercisesQueryResult
+      | ExerciseListQueryResult;
+    '\n  *[_type == "workout"] | order(date desc) {\n    _id,\n    date,\n    duration,\n    exercises[] {\n      _key,\n      _type,\n      exercise-> {\n        _id,\n        name\n      },\n      sets[] {\n        reps,\n        weight,\n        weightUnit,\n        _type,\n        _key\n      }\n    },\n    _type,\n    _key\n  }\n': GetWorkoutsQueryResult;
     '*[_type == "workout" && _id == $workoutId][0] {\n_id,\n_type,\n_createdAt,\ndate,\nduration,\nexercises[] {\n  exercise-> {\n    _id,\n    name,\n    description\n    },\n    sets[] {\n    reps,\n    weight,\n    weightUnit,\n    _type,\n    _key\n    },\n  _type,\n  _key\n  } \n}': GetWorkoutRecordQueryResult;
     '*[_type == "exercise" && _id == $id][0]': SingleExerciseQueryResult;
   }
