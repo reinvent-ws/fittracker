@@ -138,7 +138,6 @@ export default function HistoryPage() {
                     <Text className="text-gray-900 font-semibold ml-2">
                       {formatDate(workout.date)}
                     </Text>
-                    '
                   </View>
                   <View className="bg-blue-50 rounded-full p-2">
                     <Ionicons name="time-outline" size={20} color="#3b82f6" />

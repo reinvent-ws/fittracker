@@ -106,6 +106,8 @@ export default function ActiveWorkout() {
           };
         }),
       );
+
+      exercisesForSanity;
     } catch (error) {
       console.error("Erro ao salvar o treino:", error);
       Alert.alert(
@@ -393,7 +395,7 @@ export default function ActiveWorkout() {
                         {/* Reps input */}
                         <View className="flex-1 mx-2">
                           <Text className="text-xs Itext-gray-500 mb-1">
-                            Repetidos
+                            Repetições
                           </Text>
                           <TextInput
                             value={set.reps}
