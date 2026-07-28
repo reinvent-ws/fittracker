@@ -18,6 +18,8 @@ import { useStopwatch } from "react-timer-hook";
 import { useWorkoutStore, WorkoutSet } from "store/workout-store";
 import { client } from "@/lib/sanity/client";
 import { defineQuery } from "groq";
+import { useUser } from "@clerk/clerk-expo";
+import { WorkoutData } from "@/app/api/save-workout+api";
 
 // Query to find exercise by name
 const findExerciseQuery = defineQuery(
@@ -28,6 +30,7 @@ const findExerciseQuery = defineQuery(
 );
 
 export default function ActiveWorkout() {
+  const { user } = useUser();
   const {
     workoutExercises,
     setWorkoutExercises,
@@ -106,8 +109,38 @@ export default function ActiveWorkout() {
           };
         }),
       );
+      // Filter out exercises with no completed sets
+      const validExercises = exercisesForSanity.filter(
+        (exercise) => exercise.sets.length > 0,
+      );
 
-      exercisesForSanity;
+      if (validExercises.length === 0) {
+        Alert.alert(
+          "Nenhuma série completa",
+          "Por favor, complete pelo menos uma série antes de salvar o treino.",
+        );
+
+        return false;
+      }
+
+      //Create the workout document
+      const workoutData: WorkoutData = {
+        _type: "workout",
+        userId: user?.id,
+        userName: user?.fullName,
+        date: new Date().toISOString(),
+        duration: durationInSeconds,
+        exercises: validExercises,
+      };
+
+      //Save to Sanity via API
+      const result = await fetch("/api/save-workout", {
+        method: "POST",
+        body: JSON.stringify({ workoutData }),
+      });
+
+      console.log("Treino salvo com sucesso: ", result);
+      return true;
     } catch (error) {
       console.error("Erro ao salvar o treino:", error);
       Alert.alert(
