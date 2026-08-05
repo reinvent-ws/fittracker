@@ -1,14 +1,13 @@
 import { client } from "@/lib/sanity/client";
-import { GetWorkoutsQueryResult, Workout } from "@/lib/sanity/types";
+import { Workout } from "@/lib/sanity/types";
 import { formatDate, formatDuration } from "@/utils";
 import { useUser } from "@clerk/clerk-expo";
 import { Ionicons } from "@expo/vector-icons";
-import { useFocusEffect, useLocalSearchParams, useRouter } from "expo-router";
+import { useFocusEffect, useRouter } from "expo-router";
 import { defineQuery } from "groq";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useState } from "react";
 import {
   ActivityIndicator,
-  FlatList,
   RefreshControl,
   ScrollView,
   Text,
@@ -87,15 +86,15 @@ export default function HistoryPage() {
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-gray-50" edges={["top"]}>
+    <SafeAreaView className="flex-1 bg-white" edges={["top"]}>
       <ScrollView
-        className="flex-1 px-4"
+        className="flex-1 bg-gray-50"
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }
       >
         {/* Header */}
-        <View className="py-6 border-b border-gray-200 mb-4">
+        <View className="py-6 border-b border-gray-200 mb-4 px-4 bg-white">
           <Text className="text-2xl font-bold text-gray-900">
             Histórico de Treinos
           </Text>
@@ -116,7 +115,7 @@ export default function HistoryPage() {
             </Text>
           </View>
         ) : (
-          <View className="space-y-4 gap-4 mb-8">
+          <View className="space-y-4 gap-4 mb-8 px-4">
             {workouts.map((workout: any) => (
               <TouchableOpacity
                 key={workout._id}
@@ -125,7 +124,7 @@ export default function HistoryPage() {
                     `/(tabs)/history/workout-record?workoutId=${workout._id}`,
                   )
                 }
-                className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100 flex-col"
+                className="bg-white rounded-2xl p-5 shadow-md border border-gray-100 flex-col"
               >
                 {/* Date & Time */}
                 <View className="flex-row items-center justify-between mb-3">
