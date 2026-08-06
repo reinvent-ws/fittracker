@@ -293,6 +293,27 @@ export type GetWorkoutRecordQueryResult = {
   }> | null;
 } | null;
 
+// Source: ../src/app/(app)/(tabs)/profile/index.tsx
+// Variable: GetWorkoutsQuery
+// Query: *[_type == "workout" && userId == $userId] | order(date desc){    _id,    date,    duration,    exercises[] {      exericse -> {        _id,        name      },      sets[] {        reps,        weight,        weightUnit,        _type,        _key      },      _type,      _key    }  }
+export type GetWorkoutsQueryResult_2 = Array<{
+  _id: string;
+  date: string | null;
+  duration: number | null;
+  exercises: Array<{
+    exericse: null;
+    sets: Array<{
+      reps: number | null;
+      weight: number | null;
+      weightUnit: "kg" | "lbs" | null;
+      _type: "set";
+      _key: string;
+    }> | null;
+    _type: "workoutExercise";
+    _key: string;
+  }> | null;
+}>;
+
 // Source: ../src/app/(app)/exercise-detail.tsx
 // Variable: singleExerciseQuery
 // Query: *[_type == "exercise" && _id == $id][0]
@@ -349,6 +370,7 @@ declare module "@sanity/client" {
       | ExerciseListQueryResult;
     '\n  *[_type == "workout"] | order(date desc) {\n    _id,\n    date,\n    duration,\n    exercises[] {\n      _key,\n      _type,\n      exercise-> {\n        _id,\n        name\n      },\n      sets[] {\n        reps,\n        weight,\n        weightUnit,\n        _type,\n        _key\n      }\n    },\n    _type,\n    _key\n  }\n': GetWorkoutsQueryResult;
     '*[_type == "workout" && _id == $workoutId][0] {\n_id,\n_type,\n_createdAt,\ndate,\nduration,\nexercises[] {\n  exercise-> {\n    _id,\n    name,\n    description\n    },\n    sets[] {\n    reps,\n    weight,\n    weightUnit,\n    _type,\n    _key\n    },\n  _type,\n  _key\n  } \n}': GetWorkoutRecordQueryResult;
+    '*[_type == "workout" && userId == $userId] | order(date desc){\n    _id,\n    date,\n    duration,\n    exercises[] {\n      exericse -> {\n        _id,\n        name\n      },\n      sets[] {\n        reps,\n        weight,\n        weightUnit,\n        _type,\n        _key\n      },\n      _type,\n      _key\n    }\n  }': GetWorkoutsQueryResult_2;
     '*[_type == "exercise" && _id == $id][0]': SingleExerciseQueryResult;
   }
 }
